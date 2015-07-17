@@ -13,6 +13,8 @@ from shape import *
 from random import randint
 from pygame.time import Clock
 
+#test
+
 pygame.init()
 
 clock = 0
