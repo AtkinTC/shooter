@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{057f4726-511d-465b-b21a-04a5dda72ff9}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>background.py</StartupFile>
+    <StartupFile>spaceshooter.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -22,6 +22,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="background.py" />
+    <Compile Include="draw_call_list.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="collision.py" />
     <Compile Include="draw.py" />
     <Compile Include="draw_call.py" />
