@@ -1,4 +1,4 @@
-from shape import *
+﻿from shape import *
 from math import *
 from draw_call import Draw_call
 
@@ -68,21 +68,25 @@ class Player:
         self.rotation = 0
         self.accel = Pnt()
         
-    def draw(self, draw_list):
+    def draw(self):
         a = ((-self.dir+math.pi)*180.0)/math.pi
         
+        calls = []
+
         call = Draw_call('image', 5)
         call.set_arg('id', self.image_id)
         call.set_arg('pos', self.pos)
         call.set_arg('angle', a)
-        draw_list.append(call)
+        calls.append(call)
 
         call = Draw_call('shape', 10)
         call.set_arg('shape', self.shape)
         call.set_arg('rgb', (100, 100, 255))
-        draw_list.append(call)
+        calls.append(call)
 
         call = Draw_call('rect', 10)
         call.set_arg('rect', self.shape.bounding_box())
         call.set_arg('rgb', (250, 100, 100))
-        draw_list.append(call)
+        calls.append(call)
+
+        return calls

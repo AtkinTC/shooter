@@ -1,4 +1,4 @@
-import sys, pygame, math
+﻿import sys, pygame, math
 from pygame.locals import *
 import time
 import pygame.time
@@ -6,7 +6,7 @@ import pygame.font
 import pygame.image
 import collision
 import draw
-import draw_call
+from draw_call_list import Draw_Call_List
 import entity
 import background
 from shape import *
@@ -104,15 +104,15 @@ while not done:
     
     #draw loop
 
-    draw_list = draw_call.Draw_list()
+    draw_list = Draw_Call_List()
 
-    back5.draw(draw_list)
-    back_planet2.draw(draw_list)
-    back_planet1.draw(draw_list)
-    back3.draw(draw_list)
-    back2.draw(draw_list)
-    back1.draw(draw_list)
-    player.draw(draw_list)
+    draw_list.append(back5.draw())
+    draw_list.append(back_planet2.draw())
+    draw_list.append(back_planet1.draw())
+    draw_list.append(back3.draw())
+    draw_list.append(back2.draw())
+    draw_list.append(back1.draw())
+    draw_list.append(player.draw())
 
     draw_list.draw()
               
