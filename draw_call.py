@@ -17,3 +17,5 @@ class Draw_call:
             draw_shape(**self.args)
         elif type == 'rect':
             draw_rect(**self.args)
+        elif type == 'text':
+            draw_text(**self.args)
