@@ -11,7 +11,7 @@ class Background_scrolling:
         self.depth = depth
         self.centre = Pnt()
 
-    def update(self):
+    def update(self, delta):
         off_centre = draw.camera_align(self.centre)/self.parallax_depth
         s_dim = draw.get_dimensions()
         if off_centre.x + self.width < s_dim.x:
@@ -67,6 +67,8 @@ class Background_object:
         self.parallax_depth = parallax_depth
         self.depth = depth
         
+    def update(self, delta):
+        return None
 
     def draw(self):
         s_dim = draw.get_dimensions()
