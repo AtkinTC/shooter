@@ -1,5 +1,4 @@
-﻿from draw_call import *
-
+import draw_call
 class Draw_Call_List:
     def __init__(self):
         self.dict = {}
@@ -14,4 +13,4 @@ class Draw_Call_List:
     def draw(self):
         for k in self.dict.keys():
             for call in self.dict[k]:
-                draw_call.run_draw_call(call)
+                call.run_draw_call()

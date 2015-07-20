@@ -1,4 +1,4 @@
-﻿import sys, pygame, math
+import sys, pygame, math
 from pygame.locals import *
 import time
 import pygame.time
@@ -32,6 +32,8 @@ def init():
 
     game_dimensions = width, height = 640, 480
 
+    draw.init(width, height)
+
     ship = draw.load_image('ship.tif', True)
     dust1 = draw.load_image('layers\dust_640x480_1.tif', True)
     dust2 = draw.load_image('layers\dust_640x480_2.tif', True)
@@ -51,7 +53,7 @@ def init():
     entities['back_planet2'] = background.Background_object(550, -200, 40, 40, planet2, 6, 1)
     entities['back4'] = background.Background_scrolling(640, 480, starfield, 20, 0)
 
-    draw.init(width, height)
+    
 
 
 init()
@@ -102,23 +104,23 @@ while not done:
     entities['player'].input_aim(mpos+draw.get_camera()-Pnt(width/2,height/2))
 
     #update loop
-    for e in entities:
+    for e in entities.values():
         e.update(delta)
 
-    draw.camera_set(entities['player'].pos-player.velocity*delta)
+    draw.camera_set(entities['player'].pos-entities['player'].velocity*delta)
     
     #draw loop
 
     draw_list = Draw_Call_List()
 
-    for e in entities:
+    for e in entities.values():
         draw_list.append(e.draw())
 
     draw_list.draw()
               
     draw.draw_text(str(clock/1000.0), (0,0), 255, 255, 255)
     draw.draw_text(str(fps_clock.get_fps()), (40,0), 255, 255, 255)
-    draw.draw_text(str(map(int, player.pos.tuple())), (0,30), 255, 255, 255)
+    draw.draw_text(str(map(int, entities['player'].pos.tuple())), (0,30), 255, 255, 255)
 
     draw.draw_text(str(player_move), (0,15), 255, 255, 255)
 
