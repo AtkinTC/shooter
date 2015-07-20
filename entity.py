@@ -4,12 +4,71 @@ from draw_call import Draw_call
 
 small = 0.0000001
 
-class Player:
-    def __init__(self, image_id, shape, max_accel, max_speed, max_turn):
+class Entity:
+    def __init__(self, image_id, shape, pos):
         self.image_id = image_id
-        self.shape_base = shape
         self.shape = shape
-        self.pos = Pnt()
+        self.pos = pos
+        self.camera = None
+
+    def set_camera(self, camera):
+        self.camera = camera
+
+    def update(self, delta):
+        return None
+
+    def draw(self):
+        return None
+
+    def debug_draw(self):
+        calls = []
+
+        call = Draw_call('shape', 10)
+        call.set_arg('shape', self.shape)
+        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        call.set_arg('rgb', (100, 100, 255))
+        calls.append(call)
+
+        call = Draw_call('rect', 10)
+        call.set_arg('rect', self.shape.bounding_box())
+        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        call.set_arg('rgb', (250, 100, 100))
+        calls.append(call)
+
+        return calls
+
+
+class Enemy(Entity):
+    def __init__(self, image_id, shape, pos, logic):
+        Entity.__init__(self, image_id, shape, pos)
+
+        if logic:
+            logic.parent = self
+        else:
+            self.logic = None
+
+    def update(self, delta):
+        if self.logic:
+            self.logic.update()
+
+    def draw(self, debug=False):
+        calls = []
+
+        call = Draw_call('image', 4)
+        call.set_arg('id', self.image_id)
+        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        calls.append(call)
+
+        if debug:
+            calls += debug_draw()
+
+
+        return calls
+
+
+class Player(Entity):
+    def __init__(self, image_id, shape, max_accel, max_speed, max_turn):
+        Entity.__init__(self, image_id, shape, Pnt())
         self.dir = math.pi
         self.max_accel = max_accel
         self.max_speed = max_speed
@@ -17,9 +76,6 @@ class Player:
         self.accel = Pnt()
         self.velocity = Pnt()
         self.rotation = 0
-
-    def set_camera(self, camera):
-        self.camera = camera
 
     def input_aim(self, target):
         diff = target-self.pos
@@ -70,7 +126,7 @@ class Player:
         self.rotation = 0
         self.accel = Pnt()
         
-    def draw(self):
+    def draw(self, debug=False):
         a = ((-self.dir+math.pi)*180.0)/math.pi
         
         calls = []
@@ -81,16 +137,7 @@ class Player:
         call.set_arg('angle', a)
         calls.append(call)
 
-        call = Draw_call('shape', 10)
-        call.set_arg('shape', self.shape)
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
-        call.set_arg('rgb', (100, 100, 255))
-        calls.append(call)
-
-        call = Draw_call('rect', 10)
-        call.set_arg('rect', self.shape.bounding_box())
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
-        call.set_arg('rgb', (250, 100, 100))
-        calls.append(call)
+        if debug:
+            calls += debug_draw()
 
         return calls

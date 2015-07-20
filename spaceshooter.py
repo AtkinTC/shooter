@@ -40,18 +40,21 @@ def init():
 
     camera = Camera(width, height)
 
-    ship = draw.load_image('graphics\ship.tif', True)
-    dust1 = draw.load_image('graphics\layers\dust_640x480_1.tif', True)
-    dust2 = draw.load_image('graphics\layers\dust_640x480_2.tif', True)
-    dust3 = draw.load_image('graphics\layers\dust_800x800_1.tif', True)
-    planet1 = draw.load_image('graphics\layers\planet_154x154_1.tif', True)
-    planet2 = draw.load_image('graphics\layers\planet_40x40_1.tif', True)
-    starfield = draw.load_image('graphics\layers\starfield_640x480_1.tif', True)
+    ship = draw.load_image('graphics\\ship.tif', True)
+    target1 = draw.load_image('graphics\\target_30x30.tif', True)
+    dust1 = draw.load_image('graphics\\layers\\dust_640x480_1.tif', True)
+    dust2 = draw.load_image('graphics\\layers\\dust_640x480_2.tif', True)
+    dust3 = draw.load_image('graphics\\layers\\dust_800x800_1.tif', True)
+    planet1 = draw.load_image('graphics\\layers\\planet_154x154_1.tif', True)
+    planet2 = draw.load_image('graphics\\layers\\planet_40x40_1.tif', True)
+    starfield = draw.load_image('graphics\\layers\\starfield_640x480_1.tif', True)
 
     entities = {}
     shape = Polygon([Pnt(0,-15),Pnt(10,15), Pnt(-10,15)], Pnt())
     entities['player'] = entity.Player(ship, shape, 0.001, 0.3, 0.005)
 
+    shape = Circle(15)
+    entities['target1'] = entity.Enemy(target1, shape, Pnt(300, 300), None)
     
     entities['back1'] = background.Background_scrolling(640, 480, dust1, 0.5, 4)
     entities['back2'] = background.Background_scrolling(640, 480, dust2, 1.0, 3)
