@@ -81,7 +81,7 @@ def draw_shape_circle(circle, pos, rgb):
     pnt = circle.centre
     if pos:
         pnt = pnt + pos
-    pygame.draw.circle(screen, rgb, pnt.tuple(), circle.radius, 1)
+    pygame.draw.circle(screen, rgb, map(int,pnt.tuple()), int(circle.radius), 1)
 
 def draw_shape_point(point, pos, rgb):
     pnt = point.centre
