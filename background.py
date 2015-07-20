@@ -5,6 +5,7 @@ from shape import *
 
 class Background_scrolling:
     def __init__(self, width, height, image_id, parallax_depth=1, depth=1):
+        self.type = 'background'
         self.width = width
         self.height = height
         self.image_id = image_id
@@ -64,6 +65,7 @@ class Background_scrolling:
 
 class Background_object:
     def __init__(self, x, y, width, height, image_id, parallax_depth=1, depth=1):
+        self.type = 'background'
         self.centre = Pnt(x,y)
         self.width = width
         self.height = height

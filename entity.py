@@ -26,6 +26,17 @@ class Entity:
     def draw(self):
         return None
 
+    def collide(self, target_id, contact_pnt):
+        pass
+
+    def get_shape_proper(self):
+        if self.shape.type == 'poly':
+            return Polygon(self.shape.points, self.shape.centre+self.pos)
+        elif self.shape.type == 'circle':
+            return Circle(self.shape.radius, self.shape.centre+self.pos)
+        elif self.shape.type == 'point':
+            return Point(self.shape.centre+self.pos)
+
     def debug_draw(self):
         calls = []
 
