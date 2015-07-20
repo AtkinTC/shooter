@@ -23,6 +23,9 @@ def yield_entities():
     for k in entity_dict.copy():
         yield entity_dict[k]
 
+def get_entity(id):
+    return entity_dict.get(id, None)
+
 def kill_entity(id):
     global kill_set
     kill_set.add(id)

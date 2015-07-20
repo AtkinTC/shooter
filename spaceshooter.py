@@ -133,6 +133,28 @@ while not done:
     for e in entity_control.yield_entities():
         e.update(delta)
 
+
+    #collisions
+
+    e_list = [e for e in entity_control.yield_entities()]
+
+    type_map = {'background':0, 'player': 1, 'enemy':2, 'bullet':4}
+
+    for i in range(len(e_list)-1):
+        for j in range(i+1, len(e_list)):
+            e1 = e_list[i]
+            e2 = e_list[j]
+            tc = type_map[e1.type]+type_map[e2.type]
+            collision_pnt = None
+            if tc == 6:
+
+                collision_pnt = collision.shape_collide(e1.get_shape_proper(), e2.get_shape_proper())
+
+            if collision_pnt:
+                print e1.id, e2.id, collision_pnt
+                e1.collide(e2.id, collision_pnt)
+                e2.collide(e1.id, collision_pnt)
+
     entity_control.kill_finalize()
 
     player = entity_control.entity_dict[player_id]
