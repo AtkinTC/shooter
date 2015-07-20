@@ -5,6 +5,7 @@ import pygame.image
 import pygame.transform
 from shape import *
 import math
+import texture_control
 
 w, h = 320,240
 screen = None
@@ -30,23 +31,9 @@ def init(width=320, height=240):
 def get_dimensions():
     return Pnt(w,h)
 
-def load_image(name, alpha=False):
-    global image_dict, image_dict_large
-    im = pygame.image.load(name)
-    if alpha:
-        im = im.convert_alpha(screen)
-    else:
-        im = im.convert(screen)
-
-    id = 0
-    while id in image_dict:
-        id += 1
-    image_dict_large = max(image_dict_large, id)
-    image_dict[id] = im
-    return id
 
 def draw_image(id, pos, area=None, angle=0,):
-    im = image_dict.get(id, None)
+    im = texture_control.get_texture(id)
     
     if im:
         if angle:
