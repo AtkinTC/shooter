@@ -53,12 +53,15 @@ def init():
     entities['player'] = entity.Player(ship, shape, 0.001, 0.3, 0.005)
 
     
-    entities['back1'] = background.Background_scrolling(640, 480, dust1, camera, 0.5, 4)
-    entities['back2'] = background.Background_scrolling(640, 480, dust2, camera, 1.0, 3)
-    entities['back3'] = background.Background_scrolling(800, 800, dust3, camera, 2.0, 3)
+    entities['back1'] = background.Background_scrolling(640, 480, dust1, 0.5, 4)
+    entities['back2'] = background.Background_scrolling(640, 480, dust2, 1.0, 3)
+    entities['back3'] = background.Background_scrolling(800, 800, dust3, 2.0, 3)
     entities['back_planet1'] = background.Background_object(300, 100, 154, 154, planet1, 4, 2)
     entities['back_planet2'] = background.Background_object(550, -200, 40, 40, planet2, 6, 1)
-    entities['back4'] = background.Background_scrolling(640, 480, starfield, camera, 20, 0)
+    entities['back4'] = background.Background_scrolling(640, 480, starfield, 20, 0)
+
+    for e in entities.values():
+        e.set_camera(camera)
     
     
 
@@ -121,7 +124,7 @@ while not done:
     draw_list = Draw_Call_List()
 
     for e in entities.values():
-        draw_list.append(e.draw(camera))
+        draw_list.append(e.draw())
 
     draw_list.draw()
               

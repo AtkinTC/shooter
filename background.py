@@ -4,17 +4,19 @@ import camera
 from shape import *
 
 class Background_scrolling:
-    def __init__(self, width, height, image_id, cam, parallax_depth=1, depth=1):
+    def __init__(self, width, height, image_id, parallax_depth=1, depth=1):
         self.width = width
         self.height = height
         self.image_id = image_id
         self.parallax_depth = parallax_depth
         self.depth = depth
         self.centre = Pnt()
-        self.cam_link = cam
+
+    def set_camera(self, camera):
+        self.camera = camera
 
     def update(self, delta):
-        off_centre = self.cam_link.adjust_pnt(self.centre)/self.parallax_depth
+        off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
         s_dim = draw.get_dimensions()
         if off_centre.x + self.width < s_dim.x:
             self.centre.x += self.width*self.parallax_depth
@@ -28,8 +30,8 @@ class Background_scrolling:
         elif off_centre.y - self.height > 0:
             self.centre.y -= self.height*self.parallax_depth
 
-    def draw(self, cam):
-        off_centre = cam.adjust_pnt(self.centre)/self.parallax_depth
+    def draw(self):
+        off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
 
         calls = []
 
@@ -65,18 +67,21 @@ class Background_object:
         self.parallax_depth = parallax_depth
         self.depth = depth
         
+    def set_camera(self, camera):
+        self.camera = camera
+
     def update(self, delta):
         return None
 
-    def draw(self, cam):
+    def draw(self):
 
-        s_dim = Pnt(cam.get_width(), cam.get_height())
+        s_dim = Pnt(self.camera.get_width(), self.camera.get_height())
 
         calls = []
 
         call = Draw_call('image', self.depth)
         call.set_arg('id', self.image_id)
-        call.set_arg('pos', ((cam.adjust_pnt(self.centre)-s_dim/2)/self.parallax_depth)+s_dim/2)
+        call.set_arg('pos', ((self.camera.adjust_pnt(self.centre)-s_dim/2)/self.parallax_depth)+s_dim/2)
         calls.append(call)
 
         return calls
