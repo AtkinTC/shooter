@@ -1,6 +1,8 @@
 ﻿from shape import *
 from math import *
 from draw_call import Draw_call
+import input
+import entity_control
 
 small = 0.0000001
 
@@ -10,6 +12,10 @@ class Entity:
         self.shape = shape
         self.pos = pos
         self.camera = None
+        self.type = None
+
+    def set_id(self, id):
+        self.id = id
 
     def set_camera(self, camera):
         self.camera = camera
@@ -37,10 +43,11 @@ class Entity:
 
         return calls
 
-
 class Enemy(Entity):
     def __init__(self, image_id, shape, pos, logic):
         Entity.__init__(self, image_id, shape, pos)
+
+        self.type = 'enemy'
 
         if logic:
             logic.parent = self
@@ -60,15 +67,16 @@ class Enemy(Entity):
         calls.append(call)
 
         if debug:
-            calls += debug_draw()
+            calls += self.debug_draw()
 
 
         return calls
 
 
 class Player(Entity):
-    def __init__(self, image_id, shape, max_accel, max_speed, max_turn):
+    def __init__(self, image_id, shape, max_accel, max_speed, max_turn, bullet_image_id):
         Entity.__init__(self, image_id, shape, Pnt())
+        self.type = 'player'
         self.dir = math.pi
         self.max_accel = max_accel
         self.max_speed = max_speed
@@ -76,25 +84,46 @@ class Player(Entity):
         self.accel = Pnt()
         self.velocity = Pnt()
         self.rotation = 0
+        self.cooldown = 300
+        self.timer = 300
+        self.bullet_image_id = bullet_image_id
 
-    def input_aim(self, target):
+    def input_aim(self):
+        target = input.mpos+self.camera.get_pos()-Pnt(self.camera.get_width(),self.camera.get_height())/2
         diff = target-self.pos
         target_rad = math.atan2(diff.y, diff.x) - math.pi/2
         diff_r = atan2(sin(target_rad-self.dir),cos(target_rad-self.dir))
         self.rotation = diff_r*0.01
         self.rotation = max(min(self.rotation, self.max_turn), -self.max_turn)
 
-    def input_accel(self, acc):
-        r = atan2(acc.x,acc.y)
-        x = self.max_accel*sin(r)
-        if abs(x) < small:
-            x = 0
-        y = self.max_accel*cos(r)
-        if abs(y) < small:
-            y = 0
-        self.accel = Pnt(x,y)
+    def input_accel(self):
+        acc = input.player_move
+        if acc.mag():
+            r = atan2(acc.x,acc.y)
+            x = self.max_accel*sin(r)
+            if abs(x) < small:
+                x = 0
+            y = self.max_accel*cos(r)
+            if abs(y) < small:
+                y = 0
+            self.accel = Pnt(x,y)
+
+    def input_shoot(self):
+        if self.timer >= self.cooldown and input.player_shoot:
+            bullet = Projectile(self.bullet_image_id, Point(), self.pos, self.dir, 0.4, 3000)
+            bullet.set_camera(self.camera)
+            entity_control.register(bullet)
+            self.timer = 0
+
 
     def update(self, delta):
+        self.input_aim()
+        self.input_accel()
+        self.input_shoot()
+
+        if self.timer < self.cooldown:
+            self.timer += delta
+
         self.dir = self.dir + self.rotation*delta
 
         while self.dir > math.pi:
@@ -138,6 +167,41 @@ class Player(Entity):
         calls.append(call)
 
         if debug:
-            calls += debug_draw()
+            calls += self.debug_draw()
 
         return calls
+
+class Projectile(Entity):
+    def __init__(self, image_id, shape, pos, dir, speed, lifetime=None, rotate=False):
+        Entity.__init__(self, image_id, shape, pos)
+        self.type = 'bullet'
+        self.dir = dir
+        self.velocity = Pnt(-sin(dir), cos(dir))*speed
+        self.lifetime = lifetime
+        self.age = 0
+        self.rotate = rotate
+
+    def update(self, delta):
+        self.age += delta
+        if self.lifetime and self.age >= self.lifetime:
+            entity_control.kill_entity(self.id)
+            return None
+
+        self.pos = self.pos + self.velocity*delta
+
+    def draw(self, debug=False):
+        calls = []
+
+        call = Draw_call('image', 6)
+        call.set_arg('id', self.image_id)
+        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        if self.rotate:
+            a = ((-self.dir+math.pi)*180.0)/math.pi
+            call.set_arg('angle', a)
+        calls.append(call)
+
+        if debug:
+            calls += self.debug_draw()
+
+        return calls
+

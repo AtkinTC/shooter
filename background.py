@@ -11,9 +11,13 @@ class Background_scrolling:
         self.parallax_depth = parallax_depth
         self.depth = depth
         self.centre = Pnt()
+        self.id = None
 
     def set_camera(self, camera):
         self.camera = camera
+
+    def set_id(self, id):
+        self.id = id
 
     def update(self, delta):
         off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
@@ -30,7 +34,7 @@ class Background_scrolling:
         elif off_centre.y - self.height > 0:
             self.centre.y -= self.height*self.parallax_depth
 
-    def draw(self):
+    def draw(self, debug):
         off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
 
         calls = []
@@ -66,14 +70,18 @@ class Background_object:
         self.image_id = image_id
         self.parallax_depth = parallax_depth
         self.depth = depth
+        self.id = None
         
     def set_camera(self, camera):
         self.camera = camera
 
+    def set_id(self, id):
+        self.id = id
+
     def update(self, delta):
         return None
 
-    def draw(self):
+    def draw(self, debug):
 
         s_dim = Pnt(self.camera.get_width(), self.camera.get_height())
 
