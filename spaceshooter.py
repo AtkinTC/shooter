@@ -13,18 +13,22 @@ from shape import *
 from random import randint
 from pygame.time import Clock
 
+from camera import Camera
+
 
 clock = 0
 
 game_dimensions = width, height = 0, 0
 
-entities = {}
+entities = None
+
+camera = None
 
 def t_add(t1,t2):
     return map(lambda a,b: a+b,t1,t2)
 
 def init():
-    global clock, game_dimensions, width, height, entities
+    global clock, game_dimensions, width, height, entities, camera
 
     pygame.init()
 
@@ -33,6 +37,8 @@ def init():
     game_dimensions = width, height = 640, 480
 
     draw.init(width, height)
+
+    camera = Camera(width, height)
 
     ship = draw.load_image('graphics\ship.tif', True)
     dust1 = draw.load_image('graphics\layers\dust_640x480_1.tif', True)
@@ -46,13 +52,14 @@ def init():
     shape = Polygon([Pnt(0,-15),Pnt(10,15), Pnt(-10,15)], Pnt())
     entities['player'] = entity.Player(ship, shape, 0.001, 0.3, 0.005)
 
-    entities['back1'] = background.Background_scrolling(640, 480, dust1, 0.5, 4)
-    entities['back2'] = background.Background_scrolling(640, 480, dust2, 1.0, 3)
-    entities['back3'] = background.Background_scrolling(800, 800, dust3, 2.0, 3)
+    
+    entities['back1'] = background.Background_scrolling(640, 480, dust1, camera, 0.5, 4)
+    entities['back2'] = background.Background_scrolling(640, 480, dust2, camera, 1.0, 3)
+    entities['back3'] = background.Background_scrolling(800, 800, dust3, camera, 2.0, 3)
     entities['back_planet1'] = background.Background_object(300, 100, 154, 154, planet1, 4, 2)
     entities['back_planet2'] = background.Background_object(550, -200, 40, 40, planet2, 6, 1)
-    entities['back4'] = background.Background_scrolling(640, 480, starfield, 20, 0)
-
+    entities['back4'] = background.Background_scrolling(640, 480, starfield, camera, 20, 0)
+    
     
 
 
@@ -101,20 +108,20 @@ while not done:
     if player_move.mag():
         entities['player'].input_accel(player_move)
 
-    entities['player'].input_aim(mpos+draw.get_camera()-Pnt(width/2,height/2))
+    entities['player'].input_aim(mpos+camera.get_pos()-Pnt(camera.get_width(),camera.get_height())/2)
 
     #update loop
     for e in entities.values():
         e.update(delta)
 
-    draw.camera_set(entities['player'].pos-entities['player'].velocity*delta)
+    camera.set_pos(entities['player'].pos-entities['player'].velocity*delta)
     
     #draw loop
 
     draw_list = Draw_Call_List()
 
     for e in entities.values():
-        draw_list.append(e.draw())
+        draw_list.append(e.draw(camera))
 
     draw_list.draw()
               

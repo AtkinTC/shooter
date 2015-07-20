@@ -45,6 +45,9 @@ class Pnt:
     def mag(self):
         return math.pow(math.pow(self.x,2)+math.pow(self.y,2),0.5)
 
+    def copy(self):
+        return Pnt(self.x, self.y)
+
 class Rect:
     def __init__(self, width, height, pnt=None, x=None, y=None):
         self.width = width

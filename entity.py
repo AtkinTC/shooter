@@ -62,30 +62,31 @@ class Player:
 
         self.pos = self.pos + self.velocity*delta
 
-        self.shape.centre = self.pos
         self.shape.rotate(self.rotation*delta)
         
         self.rotation = 0
         self.accel = Pnt()
         
-    def draw(self):
+    def draw(self, cam):
         a = ((-self.dir+math.pi)*180.0)/math.pi
         
         calls = []
 
         call = Draw_call('image', 5)
         call.set_arg('id', self.image_id)
-        call.set_arg('pos', self.pos)
+        call.set_arg('pos', cam.adjust_pnt(self.pos))
         call.set_arg('angle', a)
         calls.append(call)
 
         call = Draw_call('shape', 10)
         call.set_arg('shape', self.shape)
+        call.set_arg('pos', cam.adjust_pnt(self.pos))
         call.set_arg('rgb', (100, 100, 255))
         calls.append(call)
 
         call = Draw_call('rect', 10)
         call.set_arg('rect', self.shape.bounding_box())
+        call.set_arg('pos', cam.adjust_pnt(self.pos))
         call.set_arg('rgb', (250, 100, 100))
         calls.append(call)
 

@@ -15,8 +15,6 @@ tile = None
 image_dict = {}
 image_dict_large = -1
 
-camera = None
-
 def t_add(t1,t2):
     return map(lambda a,b: a+b,t1,t2)
 
@@ -28,24 +26,9 @@ def init(width=320, height=240):
     screen.fill((0,0,0))
     pygame.font.init()
     font = pygame.font.SysFont(None, 15)
-    camera = Pnt()
 
 def get_dimensions():
     return Pnt(w,h)
-
-def camera_translate(pnt):
-    global camera
-    camera = camera+pnt
-
-def camera_set(pnt):
-    global camera
-    camera = pnt
-
-def camera_align(pnt):
-    return pnt - camera + Pnt(w/2,h/2)
-
-def get_camera():
-    return camera
 
 def load_image(name, alpha=False):
     global image_dict, image_dict_large
@@ -62,7 +45,7 @@ def load_image(name, alpha=False):
     image_dict[id] = im
     return id
 
-def draw_image(id, pos, area=None, angle=0, cam=True):
+def draw_image(id, pos, area=None, angle=0,):
     im = image_dict.get(id, None)
     
     if im:
@@ -74,50 +57,46 @@ def draw_image(id, pos, area=None, angle=0, cam=True):
             im = pygame.transform.smoothscale(im, d)
 
         pos = pos-Pnt(im.get_width(),im.get_height())/2
-        if cam:
-            pos = camera_align(pos)
         screen.blit(im, pos.tuple(), area)
 
 def fill(x, y, w, h, r, g, b):
     screen.fill((r,g,b),(x,y,w,h))
 
-def draw_shape(shape, rgb, cam=True):
+def draw_shape(shape, rgb, pos = None):
     if shape.type == 'poly':
-        draw_shape_polygon(shape, rgb, cam)
+        draw_shape_polygon(shape, pos, rgb)
     elif shape.type == 'circle':
-        draw_shape_circle(shape, rgb, cam)
+        draw_shape_circle(shape, pos, rgb)
     elif shape.type == 'point':
-        draw_shape_point(shape, rgb, cam)
+        draw_shape_point(shape, pos, rgb)
 
-def draw_shape_polygon(polygon, rgb, cam):
+def draw_shape_polygon(polygon, pos, rgb):
     points = polygon.get_points()
-    if cam:
-        points = map(camera_align, points)
+    if pos:
+        points = map(lambda a: a+pos, points)
     points = [p.tuple() for p in points]
     pygame.draw.polygon(screen, rgb, points, 1)
 
-def draw_shape_circle(circle, rgb, cam):
+def draw_shape_circle(circle, pos, rgb):
     pnt = circle.centre
-    if cam:
-        pnt = camera_align(pnt)
+    if pos:
+        pnt = pnt + pos
     pygame.draw.circle(screen, rgb, pnt.tuple(), circle.radius, 1)
 
-def draw_shape_point(point, rgb, cam):
-    centre = point.centre
-    if cam:
-          centre  = camera_align(centre)
-    screen.fill(rgb, (centre.x, centre.y, 1, 1))
+def draw_shape_point(point, pos, rgb):
+    pnt = point.centre
+    if pos:
+        pnt = pos + pnt
+    screen.fill(rgb, (pnt.x, pnt.y, 1, 1))
 
-def draw_rect(rect, rgb, cam=True, width = 1):
+def draw_rect(rect, rgb, pos = None, width = 1):
     p, w, h = rect.tuple()
-    if cam:
-        p = camera_align(p)
+    if pos:
+        p = p+pos
     pygame.draw.rect(screen, rgb, (p.x, p.y, w, h), width) 
 
-def draw_shape_bound(shape, r, g, b, cam=True):
+def draw_shape_bound(shape, r, g, b):
     p, w, h = shape.bounding_box().tuple()
-    if cam:
-        p = camera_align(p)
     pygame.draw.rect(screen, (r,g,b), (p.x,p.y,w,h), 1)
     
 def draw_point(pos, r, g, b):

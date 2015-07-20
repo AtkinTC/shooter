@@ -22,6 +22,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="background.py" />
+    <Compile Include="camera.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="draw_call_list.py">
       <SubType>Code</SubType>
     </Compile>
