@@ -9,9 +9,13 @@ import draw
 from draw_call_list import Draw_Call_List
 import entity
 import background
+import input
 from shape import *
 from random import randint
 from pygame.time import Clock
+
+import entity_control
+import texture_control
 
 from camera import Camera
 
@@ -20,15 +24,16 @@ clock = 0
 
 game_dimensions = width, height = 0, 0
 
-entities = None
+#entities = None
 
 camera = None
+player_id = None
 
 def t_add(t1,t2):
     return map(lambda a,b: a+b,t1,t2)
 
 def init():
-    global clock, game_dimensions, width, height, entities, camera
+    global clock, game_dimensions, width, height, camera, player_id
 
     pygame.init()
 
@@ -40,30 +45,34 @@ def init():
 
     camera = Camera(width, height)
 
-    ship = draw.load_image('graphics\\ship.tif', True)
-    target1 = draw.load_image('graphics\\target_30x30.tif', True)
-    dust1 = draw.load_image('graphics\\layers\\dust_640x480_1.tif', True)
-    dust2 = draw.load_image('graphics\\layers\\dust_640x480_2.tif', True)
-    dust3 = draw.load_image('graphics\\layers\\dust_800x800_1.tif', True)
-    planet1 = draw.load_image('graphics\\layers\\planet_154x154_1.tif', True)
-    planet2 = draw.load_image('graphics\\layers\\planet_40x40_1.tif', True)
-    starfield = draw.load_image('graphics\\layers\\starfield_640x480_1.tif', True)
+    entity_control.init()
+
+    texture_control.load_texture('graphics\\ship.tif', 'player_ship', True)
+
+    texture_control.load_texture('graphics\\bullet_6x6.tif', 'bullet1', True)
+    texture_control.load_texture('graphics\\target_30x30.tif', 'target1', True)
+    texture_control.load_texture('graphics\\layers\\dust_640x480_1.tif', 'dust1', True)
+    texture_control.load_texture('graphics\\layers\\dust_640x480_2.tif', 'dust2', True)
+    texture_control.load_texture('graphics\\layers\\dust_800x800_1.tif', 'dust3', True)
+    texture_control.load_texture('graphics\\layers\\planet_154x154_1.tif', 'planet1', True)
+    texture_control.load_texture('graphics\\layers\\planet_40x40_1.tif', 'planet2', True)
+    texture_control.load_texture('graphics\\layers\\starfield_640x480_1.tif', 'starfield', True)
 
     entities = {}
     shape = Polygon([Pnt(0,-15),Pnt(10,15), Pnt(-10,15)], Pnt())
-    entities['player'] = entity.Player(ship, shape, 0.001, 0.3, 0.005)
+    player_id = entity_control.register(entity.Player('player_ship', shape, 0.0005, 0.2, 0.005, 'bullet1'))
 
     shape = Circle(15)
-    entities['target1'] = entity.Enemy(target1, shape, Pnt(300, 300), None)
+    entity_control.register(entity.Enemy('target1', shape, Pnt(300, 300), None))
     
-    entities['back1'] = background.Background_scrolling(640, 480, dust1, 0.5, 4)
-    entities['back2'] = background.Background_scrolling(640, 480, dust2, 1.0, 3)
-    entities['back3'] = background.Background_scrolling(800, 800, dust3, 2.0, 3)
-    entities['back_planet1'] = background.Background_object(300, 100, 154, 154, planet1, 4, 2)
-    entities['back_planet2'] = background.Background_object(550, -200, 40, 40, planet2, 6, 1)
-    entities['back4'] = background.Background_scrolling(640, 480, starfield, 20, 0)
+    entity_control.register(background.Background_scrolling(640, 480, 'dust1', 0.5, 4))
+    entity_control.register(background.Background_scrolling(640, 480, 'dust2', 1.0, 3))
+    entity_control.register(background.Background_scrolling(800, 800, 'dust3', 2.0, 3))
+    entity_control.register(background.Background_object(300, 100, 154, 154, 'planet1', 4, 2))
+    entity_control.register(background.Background_object(550, -200, 40, 40, 'planet2', 6, 1))
+    entity_control.register(background.Background_scrolling(640, 480, 'starfield', 20, 0))
 
-    for e in entities.values():
+    for e in entity_control.yield_entities():
         e.set_camera(camera)
     
     
@@ -77,65 +86,72 @@ done = False
 fps_clock = Clock()
 delta = 0
 player_move = Pnt()
+debug = False
 while not done:
     clock = pygame.time.get_ticks()
     mx, my = pygame.mouse.get_pos()
-    mpos = Pnt(mx, my)
+    input.mpos = Pnt(mx, my)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
         if event.type == pygame.KEYDOWN:
+            #print event.key
+            if event.key == 96:
+                debug = not debug
             #W
             if event.key == 119:
-                player_move.y += -1
+                input.player_move.y += -1
             #S
             if event.key == 115:
-                player_move.y += 1
+                input.player_move.y += 1
             #A
             if event.key == 97:
-                player_move.x += -1
+                input.player_move.x += -1
             #D
             if event.key == 100:
-                player_move.x += 1
+                input.player_move.x += 1
         if event.type == pygame.KEYUP:
             #W
             if event.key == 119:
-                player_move.y += 1
+                input.player_move.y += 1
             #S
             if event.key == 115:
-                player_move.y += -1
+                input.player_move.y += -1
             #A
             if event.key == 97:
-                player_move.x += 1
+                input.player_move.x += 1
             #D
             if event.key == 100:
-                player_move.x += -1
-
-    if player_move.mag():
-        entities['player'].input_accel(player_move)
-
-    entities['player'].input_aim(mpos+camera.get_pos()-Pnt(camera.get_width(),camera.get_height())/2)
+                input.player_move.x += -1
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            input.player_shoot = True
+        if event.type == pygame.MOUSEBUTTONUP:
+            input.player_shoot = False
 
     #update loop
-    for e in entities.values():
+
+    for e in entity_control.yield_entities():
         e.update(delta)
 
-    camera.set_pos(entities['player'].pos-entities['player'].velocity*delta)
+    entity_control.kill_finalize()
+
+    player = entity_control.entity_dict[player_id]
+    camera.set_pos(player.pos-player.velocity*delta)
     
     #draw loop
 
     draw_list = Draw_Call_List()
 
-    for e in entities.values():
-        draw_list.append(e.draw())
+    for e in entity_control.yield_entities():
+        draw_list.append(e.draw(debug))
 
     draw_list.draw()
               
     draw.draw_text(str(clock/1000.0), (0,0), 255, 255, 255)
     draw.draw_text(str(fps_clock.get_fps()), (40,0), 255, 255, 255)
-    draw.draw_text(str(map(int, entities['player'].pos.tuple())), (0,30), 255, 255, 255)
+    draw.draw_text(str(map(int, player.pos.tuple())), (0,30), 255, 255, 255)
 
-    draw.draw_text(str(player_move), (0,15), 255, 255, 255)
+    draw.draw_text(str(input.player_move), (0,15), 255, 255, 255)
 
     delta = fps_clock.get_time()
     fps_clock.tick()

@@ -32,6 +32,15 @@
     <Compile Include="draw.py" />
     <Compile Include="draw_call.py" />
     <Compile Include="entity.py" />
+    <Compile Include="entity_control.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="input.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="texture_control.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="shape.py" />
     <Compile Include="spaceshooter.py" />
   </ItemGroup>
