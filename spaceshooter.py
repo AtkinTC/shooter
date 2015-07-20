@@ -34,13 +34,13 @@ def init():
 
     draw.init(width, height)
 
-    ship = draw.load_image('ship.tif', True)
-    dust1 = draw.load_image('layers\dust_640x480_1.tif', True)
-    dust2 = draw.load_image('layers\dust_640x480_2.tif', True)
-    dust3 = draw.load_image('layers\dust_800x800_1.tif', True)
-    planet1 = draw.load_image('layers\planet_154x154_1.tif', True)
-    planet2 = draw.load_image('layers\planet_40x40_1.tif', True)
-    starfield = draw.load_image('layers\starfield_640x480_1.tif', True)
+    ship = draw.load_image('graphics\ship.tif', True)
+    dust1 = draw.load_image('graphics\layers\dust_640x480_1.tif', True)
+    dust2 = draw.load_image('graphics\layers\dust_640x480_2.tif', True)
+    dust3 = draw.load_image('graphics\layers\dust_800x800_1.tif', True)
+    planet1 = draw.load_image('graphics\layers\planet_154x154_1.tif', True)
+    planet2 = draw.load_image('graphics\layers\planet_40x40_1.tif', True)
+    starfield = draw.load_image('graphics\layers\starfield_640x480_1.tif', True)
 
     entities = {}
     shape = Polygon([Pnt(0,-15),Pnt(10,15), Pnt(-10,15)], Pnt())
