@@ -9,6 +9,7 @@ def t_add(t1,t2):
 def shape_collide(s1, s2):
     if not bounding_box_collision(s1,s2):
         return None
+
     #convert type to corresponding flag
     t1 = types.get(s1.type)
     t2 = types.get(s2.type)

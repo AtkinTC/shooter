@@ -147,11 +147,8 @@ while not done:
             tc = type_map[e1.type]+type_map[e2.type]
             collision_pnt = None
             if tc == 6:
-
                 collision_pnt = collision.shape_collide(e1.get_shape_proper(), e2.get_shape_proper())
-
             if collision_pnt:
-                print e1.id, e2.id, collision_pnt
                 e1.collide(e2.id, collision_pnt)
                 e2.collide(e1.id, collision_pnt)
 
