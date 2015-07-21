@@ -75,14 +75,13 @@ class Shape:
         self.centre = Pnt()
         self.width = 0
         self.height = 0
-        self.topleft = Pnt()
         self.type = None
 
     def translate(self, pnt):
         self.centre = self.centre + pnt
 
     def bounding_box(self):
-        return Rect(self.width, self.height, pnt=self.topleft)
+        return Rect(self.width, self.height, self.centre-Pnt(self.width, self.height)/2)
 
 class Polygon(Shape):
     def __init__(self, points, centre=None):
@@ -136,7 +135,10 @@ class Polygon(Shape):
             maxy = max(maxy, p.y)
         self.width = maxx-minx+2
         self.height = maxy-miny+2
-        self.topleft = Pnt(self.centre.x+minx, self.centre.y+miny)
+        self.topleft = Pnt(minx, miny)
+
+    def bounding_box(self):
+        return Rect(self.width, self.height, self.centre+self.topleft)
 
 class Circle(Shape):
     def __init__(self, radius, centre=None):
@@ -151,6 +153,9 @@ class Circle(Shape):
         self.width = 2*radius
         self.height = 2*radius
         self.topleft = self.centre - Pnt(radius, radius)
+
+    def bounding_box(self):
+        return Rect(self.radius*2, self.radius*2, self.centre-Pnt(self.radius, self.radius))
 
 class Point(Shape):
     def __init__(self, centre=None):
