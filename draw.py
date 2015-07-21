@@ -43,7 +43,15 @@ def draw_image(id, pos, area=None, angle=0,):
             d = (im.get_width()/2, im.get_height()/2)
             im = pygame.transform.smoothscale(im, d)
 
-        pos = pos-Pnt(im.get_width(),im.get_height())/2
+
+        width, height = im.get_width(),im.get_height()
+        if area:
+            width, height = area.width, area.height
+        pos = pos-Pnt(width, height)/2
+
+        if area:
+            area = (area.pnt.x, area.pnt.y, area.width, area.height)
+
         screen.blit(im, pos.tuple(), area)
 
 def fill(x, y, w, h, r, g, b):

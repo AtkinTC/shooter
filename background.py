@@ -38,26 +38,63 @@ class Background_scrolling:
     def draw(self, debug):
         off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
 
+        s_dim = draw.get_dimensions()
+
+        calls = []
+         
+        if debug:
+            calls = calls + self.debug_draw()
+
+        #top left tile
+        width, height = off_centre.x, off_centre.y
+        origin = Pnt(self.width-off_centre.x, self.height-off_centre.y)
+
+        call = Draw_call('image', self.depth)
+        call.set_arg('id', self.image_id)
+        call.set_arg('pos', off_centre+Pnt(-width,-height)/2)
+        call.set_arg('area', Rect(width, height, origin))
+        calls.append(call)
+
+        #top right tile
+        width, height = s_dim.x-off_centre.x, off_centre.y
+        origin = Pnt(0,self.height-off_centre.y)
+
+        call = Draw_call('image', self.depth)
+        call.set_arg('id', self.image_id)
+        call.set_arg('pos', off_centre+Pnt(width, -height)/2)
+        call.set_arg('area', Rect(width, height, origin))
+        calls.append(call)
+
+        #bottom left tile
+        width, height = off_centre.x, s_dim.y-off_centre.y
+        origin = Pnt(self.width-off_centre.x,0)
+
+        call = Draw_call('image', self.depth)
+        call.set_arg('id', self.image_id)
+        call.set_arg('pos', off_centre+Pnt(-width, height)/2)
+        call.set_arg('area', Rect(width, height, origin))
+        calls.append(call)
+
+        #bottom right tile
+        width, height = s_dim.x-off_centre.x, s_dim.y-off_centre.y
+        origin = Pnt(0,0)
+
+        call = Draw_call('image', self.depth)
+        call.set_arg('id', self.image_id)
+        call.set_arg('pos', off_centre+Pnt(width, height)/2)
+        call.set_arg('area', Rect(width, height, origin))
+        calls.append(call)
+
+        return calls
+
+    def debug_draw(self):
+        off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
+
         calls = []
 
-        call = Draw_call('image', self.depth)
-        call.set_arg('id', self.image_id)
-        call.set_arg('pos', off_centre+Pnt(-self.width,-self.height)/2)
-        calls.append(call)
-
-        call = Draw_call('image', self.depth)
-        call.set_arg('id', self.image_id)
-        call.set_arg('pos', off_centre+Pnt(self.width,-self.height)/2)
-        calls.append(call)
-
-        call = Draw_call('image', self.depth)
-        call.set_arg('id', self.image_id)
-        call.set_arg('pos', off_centre+Pnt(-self.width,self.height)/2)
-        calls.append(call)
-
-        call = Draw_call('image', self.depth)
-        call.set_arg('id', self.image_id)
-        call.set_arg('pos', off_centre+Pnt(self.width,self.height)/2)
+        call = Draw_call('shape', 10)
+        call.set_arg('shape', Circle(5, off_centre))
+        call.set_arg('rgb', (255,255,255))
         calls.append(call)
 
         return calls
@@ -92,6 +129,7 @@ class Background_object:
         call = Draw_call('image', self.depth)
         call.set_arg('id', self.image_id)
         call.set_arg('pos', ((self.camera.adjust_pnt(self.centre)-s_dim/2)/self.parallax_depth)+s_dim/2)
+        #call.set_arg('area', Rect(self.width/2, self.height/2, Pnt()))
         calls.append(call)
 
         return calls
