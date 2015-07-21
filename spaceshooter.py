@@ -177,6 +177,4 @@ while not done:
     
     draw.flip()
 
-    time.sleep(0.02)
-
 pygame.quit()
