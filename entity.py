@@ -216,3 +216,6 @@ class Projectile(Entity):
 
         return calls
 
+    def collide(self, target_id, contact_pnt):
+        if entity_control.get_entity(target_id).type == 'enemy':
+            entity_control.kill_entity(self.id)
