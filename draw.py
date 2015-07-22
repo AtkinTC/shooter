@@ -11,8 +11,6 @@ w, h = 320,240
 screen = None
 font = None
 
-tile = None
-
 image_dict = {}
 image_dict_large = -1
 
@@ -20,7 +18,7 @@ def t_add(t1,t2):
     return map(lambda a,b: a+b,t1,t2)
 
 def init(width=320, height=240):
-    global screen, w, h, font, tile, camera
+    global screen, w, h, font
     w = width
     h = height
     screen = pygame.display.set_mode((w,h))
@@ -32,7 +30,8 @@ def get_dimensions():
     return Pnt(w,h)
 
 
-def draw_image(texture, pos, area=None, angle=0,):
+def draw_texture(texture, pos, area=None, angle=0,):
+    print pos
     if angle:
         d = (texture.get_width()*2, texture.get_height()*2)
         texture = pygame.transform.smoothscale(texture, d)
@@ -44,10 +43,9 @@ def draw_image(texture, pos, area=None, angle=0,):
     width, height = texture.get_width(),texture.get_height()
     if area:
         width, height = area.width, area.height
-    pos = pos-Pnt(width, height)/2
-
-    if area:
         area = (area.pnt.x, area.pnt.y, area.width, area.height)
+        
+    pos = pos-Pnt(width, height)/2
 
     screen.blit(texture, pos.tuple(), area)
 

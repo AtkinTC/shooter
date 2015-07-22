@@ -6,7 +6,7 @@ import pygame.font
 import pygame.image
 import collision
 import draw
-from draw_call_list import Draw_Call_List
+from draw_call import Draw_Call_List
 import entity
 import background
 import input
@@ -15,7 +15,7 @@ from random import randint
 from pygame.time import Clock
 
 import entity_control
-import texture_control
+from texture_control import *
 
 from camera import Camera
 
@@ -47,16 +47,16 @@ def init():
 
     entity_control.init()
 
-    player_ship = texture_control.load_texture('graphics\\ship.tif', 'player_ship', True)
+    player_ship = load_texture('graphics\\ship.tif', 'player_ship')
 
-    bullet1 = texture_control.load_texture('graphics\\bullet_6x6.tif', 'bullet1', True)
-    target1 = texture_control.load_texture('graphics\\target_30x30.tif', 'target1', True)
-    dust1 = texture_control.load_texture('graphics\\layers\\dust_640x480_1.tif', 'dust1', True)
-    dust2 = texture_control.load_texture('graphics\\layers\\dust_640x480_2.tif', 'dust2', True)
-    dust3 = texture_control.load_texture('graphics\\layers\\dust_800x800_1.tif', 'dust3', True)
-    planet1 = texture_control.load_texture('graphics\\layers\\planet_154x154_1.tif', 'planet1', True)
-    planet2 = texture_control.load_texture('graphics\\layers\\planet_40x40_1.tif', 'planet2', True)
-    starfield = texture_control.load_texture('graphics\\layers\\starfield_640x480_1.tif', 'starfield', True)
+    bullet1 = load_texture('graphics\\bullet_6x6.tif', 'bullet1')
+    target1 = load_texture('graphics\\target_30x30.tif', 'target1')
+    dust1 = load_texture('graphics\\layers\\dust_640x480_1.tif', 'dust1')
+    dust2 = load_texture('graphics\\layers\\dust_640x480_2.tif', 'dust2')
+    dust3 = load_texture('graphics\\layers\\dust_800x800_1.tif', 'dust3')
+    planet1 = load_texture('graphics\\layers\\planet_154x154_1.tif', 'planet1')
+    planet2 = load_texture('graphics\\layers\\planet_40x40_1.tif', 'planet2')
+    starfield = load_texture('graphics\\layers\\starfield_640x480_1.tif', 'starfield')
 
     entities = {}
     shape = Polygon([Pnt(0,-15),Pnt(10,15), Pnt(-10,15)], Pnt())

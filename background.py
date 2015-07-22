@@ -49,7 +49,7 @@ class Background_scrolling:
         width, height = off_centre.x, off_centre.y
         origin = Pnt(self.width-off_centre.x, self.height-off_centre.y)
 
-        call = Draw_call('image', self.depth)
+        call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
         call.set_arg('pos', off_centre+Pnt(-width,-height)/2)
         call.set_arg('area', Rect(width, height, origin))
@@ -59,7 +59,7 @@ class Background_scrolling:
         width, height = s_dim.x-off_centre.x, off_centre.y
         origin = Pnt(0,self.height-off_centre.y)
 
-        call = Draw_call('image', self.depth)
+        call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
         call.set_arg('pos', off_centre+Pnt(width, -height)/2)
         call.set_arg('area', Rect(width, height, origin))
@@ -69,7 +69,7 @@ class Background_scrolling:
         width, height = off_centre.x, s_dim.y-off_centre.y
         origin = Pnt(self.width-off_centre.x,0)
 
-        call = Draw_call('image', self.depth)
+        call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
         call.set_arg('pos', off_centre+Pnt(-width, height)/2)
         call.set_arg('area', Rect(width, height, origin))
@@ -79,7 +79,7 @@ class Background_scrolling:
         width, height = s_dim.x-off_centre.x, s_dim.y-off_centre.y
         origin = Pnt(0,0)
 
-        call = Draw_call('image', self.depth)
+        call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
         call.set_arg('pos', off_centre+Pnt(width, height)/2)
         call.set_arg('area', Rect(width, height, origin))
@@ -126,7 +126,7 @@ class Background_object:
 
         calls = []
 
-        call = Draw_call('image', self.depth)
+        call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
         call.set_arg('pos', ((self.camera.adjust_pnt(self.centre)-s_dim/2)/self.parallax_depth)+s_dim/2)
         #call.set_arg('area', Rect(self.width/2, self.height/2, Pnt()))

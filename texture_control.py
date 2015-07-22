@@ -2,14 +2,15 @@ import pygame.image
 
 texture_dict = {}
 
-def load_texture(name, id, alpha=False):
+def load_texture(filename, id=None):
     global texture_dict
-    im = pygame.image.load(name)
-    if alpha:
-        im = pygame.image.load(name).convert_alpha()
-    else:
-        im = pygame.image.load(name).convert()
+    im = pygame.image.load(filename).convert_alpha()
 
+    if not id:
+        id = 0
+        while id in textures:
+            id += 1
+        self.tex_ID = id
     texture_dict[id] = im
     return im
 
