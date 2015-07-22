@@ -25,12 +25,12 @@
     <Compile Include="camera.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="draw_call_list.py">
+    <Compile Include="draw_call.py" />
+    <Compile Include="gl_texture.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="collision.py" />
     <Compile Include="draw.py" />
-    <Compile Include="draw_call.py" />
     <Compile Include="entity.py" />
     <Compile Include="entity_control.py">
       <SubType>Code</SubType>

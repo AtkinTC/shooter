@@ -6,13 +6,15 @@ import pygame.font
 import pygame.image
 import collision
 import draw
-from draw_call_list import Draw_Call_List
+from draw_call import *
 import entity
 import background
 import input
 from shape import *
 from random import randint
 from pygame.time import Clock
+
+from gl_texture import GL_Texture
 
 import entity_control
 import texture_control
@@ -47,16 +49,17 @@ def init():
 
     entity_control.init()
 
-    player_ship = texture_control.load_texture('graphics\\ship.tif', 'player_ship', True)
+    player_ship = GL_Texture('graphics\\ship.tif')
 
-    bullet1 = texture_control.load_texture('graphics\\bullet_6x6.tif', 'bullet1', True)
-    target1 = texture_control.load_texture('graphics\\target_30x30.tif', 'target1', True)
-    dust1 = texture_control.load_texture('graphics\\layers\\dust_640x480_1.tif', 'dust1', True)
-    dust2 = texture_control.load_texture('graphics\\layers\\dust_640x480_2.tif', 'dust2', True)
-    dust3 = texture_control.load_texture('graphics\\layers\\dust_800x800_1.tif', 'dust3', True)
-    planet1 = texture_control.load_texture('graphics\\layers\\planet_154x154_1.tif', 'planet1', True)
-    planet2 = texture_control.load_texture('graphics\\layers\\planet_40x40_1.tif', 'planet2', True)
-    starfield = texture_control.load_texture('graphics\\layers\\starfield_640x480_1.tif', 'starfield', True)
+    bullet1 = GL_Texture('graphics\\bullet_6x6.tif')
+    target1 = GL_Texture('graphics\\target_30x30.tif')
+    dust1 = GL_Texture('graphics\\layers\\dust_640x480_1.tif')
+    dust2 = GL_Texture('graphics\\layers\\dust_640x480_2.tif')
+    dust3 = GL_Texture('graphics\\layers\\dust_800x800_1.tif')
+    planet1 = GL_Texture('graphics\\layers\\planet_154x154_1.tif')
+    planet2 = GL_Texture('graphics\\layers\\planet_40x40_1.tif')
+    starfield = GL_Texture('graphics\\layers\\starfield_640x480_1.tif')
+    test = GL_Texture('graphics\\layers\\test_400x400.tif')
 
     entities = {}
     shape = Polygon([Pnt(0,-15),Pnt(10,15), Pnt(-10,15)], Pnt())
@@ -64,12 +67,12 @@ def init():
 
     shape = Circle(15)
     entity_control.register(entity.Enemy(target1, shape, Pnt(300, 300), None))
-    
+
     entity_control.register(background.Background_scrolling(dust1, 0.5, 4))
     entity_control.register(background.Background_scrolling(dust2, 1.0, 3))
     entity_control.register(background.Background_scrolling(dust3, 2.0, 3))
-    entity_control.register(background.Background_object(Pnt(300, 100), planet1, 4, 2))
-    entity_control.register(background.Background_object(Pnt(550, -200), planet2, 6, 1))
+    entity_control.register(background.Background_object(Pnt(0, 0), planet1, 4, 2))
+    entity_control.register(background.Background_object(Pnt(0, 0), planet2, 6, 1))
     entity_control.register(background.Background_scrolling(starfield, 20, 0))
 
     for e in entity_control.yield_entities():
@@ -164,17 +167,19 @@ while not done:
     for e in entity_control.yield_entities():
         draw_list.append(e.draw(debug))
 
-    draw_list.draw()
+    draw.draw_loop(draw_list)
               
-    draw.draw_text(str(clock/1000.0), (0,0), 255, 255, 255)
-    draw.draw_text(str(fps_clock.get_fps()), (40,0), 255, 255, 255)
-    draw.draw_text(str(map(int, player.pos.tuple())), (0,30), 255, 255, 255)
+    #draw.draw_text(str(clock/1000.0), (0,0), 255, 255, 255)
+    #draw.draw_text(str(fps_clock.get_fps()), (40,0), 255, 255, 255)
+    #draw.draw_text(str(map(int, player.pos.tuple())), (0,30), 255, 255, 255)
 
-    draw.draw_text(str(input.player_move), (0,15), 255, 255, 255)
+    #draw.draw_text(str(input.player_move), (0,15), 255, 255, 255)
+
+    print fps_clock.get_fps()
 
     delta = fps_clock.get_time()
     fps_clock.tick()
     
-    draw.flip()
+    #draw.flip()
 
 pygame.quit()

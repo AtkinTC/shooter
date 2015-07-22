@@ -6,8 +6,8 @@ from shape import *
 class Background_scrolling:
     def __init__(self, texture, parallax_depth=1, depth=1):
         self.type = 'background'
-        self.width = texture.get_width()
-        self.height = texture.get_height()
+        self.width = texture.width
+        self.height = texture.height
         self.texture = texture
         self.parallax_depth = parallax_depth
         self.depth = depth
@@ -23,22 +23,24 @@ class Background_scrolling:
     def update(self, delta):
         off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
         s_dim = draw.get_dimensions()
+
         if off_centre.x + self.width < s_dim.x:
             self.centre.x += self.width*self.parallax_depth
             
-        elif off_centre.x - self.width > 0:
+        elif off_centre.x - self.width >= 0:
             self.centre.x -= self.width*self.parallax_depth
             
         if off_centre.y + self.height < s_dim.y:
             self.centre.y += self.height*self.parallax_depth
             
-        elif off_centre.y - self.height > 0:
+        elif off_centre.y - self.height >= 0:
             self.centre.y -= self.height*self.parallax_depth
 
     def draw(self, debug):
         off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
-
         s_dim = draw.get_dimensions()
+
+        off_centre = Pnt(int(off_centre.x), int(off_centre.y))
 
         calls = []
          
@@ -46,43 +48,51 @@ class Background_scrolling:
             calls = calls + self.debug_draw()
 
         #top left tile
-        width, height = off_centre.x, off_centre.y
-        origin = Pnt(self.width-off_centre.x, self.height-off_centre.y)
 
-        call = Draw_call('image', self.depth)
+        #width, height = off_centre.x, off_centre.y
+        #origin = Pnt(self.width-off_centre.x, self.height-off_centre.y)
+
+        call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
-        call.set_arg('pos', off_centre+Pnt(-width,-height)/2)
-        call.set_arg('area', Rect(width, height, origin))
+        call.set_arg('pos', off_centre-Pnt(self.width, self.height))
+        #call.set_arg('pos', off_centre+Pnt(-width,-height))
+        #call.set_arg('area', Rect(width, height, origin))
         calls.append(call)
 
         #top right tile
-        width, height = s_dim.x-off_centre.x, off_centre.y
-        origin = Pnt(0,self.height-off_centre.y)
 
-        call = Draw_call('image', self.depth)
+        #width, height = s_dim.x-off_centre.x, off_centre.y
+        #origin = Pnt(0,self.height-off_centre.y)
+
+        call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
-        call.set_arg('pos', off_centre+Pnt(width, -height)/2)
-        call.set_arg('area', Rect(width, height, origin))
+        call.set_arg('pos', off_centre-Pnt(0, self.height))
+        #call.set_arg('pos', off_centre+Pnt(width, -height))
+        #call.set_arg('area', Rect(width, height, origin))
         calls.append(call)
 
         #bottom left tile
-        width, height = off_centre.x, s_dim.y-off_centre.y
-        origin = Pnt(self.width-off_centre.x,0)
 
-        call = Draw_call('image', self.depth)
+        #width, height = off_centre.x, s_dim.y-off_centre.y
+        #origin = Pnt(self.width-off_centre.x,0)
+
+        call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
-        call.set_arg('pos', off_centre+Pnt(-width, height)/2)
-        call.set_arg('area', Rect(width, height, origin))
+        call.set_arg('pos', off_centre-Pnt(self.width, 0))
+        #call.set_arg('pos', off_centre+Pnt(-width, height))
+        #call.set_arg('area', Rect(width, height, origin))
         calls.append(call)
 
         #bottom right tile
-        width, height = s_dim.x-off_centre.x, s_dim.y-off_centre.y
-        origin = Pnt(0,0)
 
-        call = Draw_call('image', self.depth)
+        #width, height = s_dim.x-off_centre.x, s_dim.y-off_centre.y
+        #origin = Pnt(0,0)
+
+        call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
-        call.set_arg('pos', off_centre+Pnt(width, height)/2)
-        call.set_arg('area', Rect(width, height, origin))
+        call.set_arg('pos', off_centre-Pnt(0,0))
+        #call.set_arg('pos', off_centre+Pnt(width, height))
+        #call.set_arg('area', Rect(width, height, origin))
         calls.append(call)
 
         return calls
@@ -104,8 +114,8 @@ class Background_object:
     def __init__(self, centre, texture, parallax_depth=1, depth=1):
         self.type = 'background'
         self.centre = centre
-        self.width = texture.get_width()
-        self.height = texture.get_height()
+        self.width = texture.width
+        self.height = texture.height
         self.texture = texture
         self.parallax_depth = parallax_depth
         self.depth = depth
@@ -126,9 +136,9 @@ class Background_object:
 
         calls = []
 
-        call = Draw_call('image', self.depth)
+        call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
-        call.set_arg('pos', ((self.camera.adjust_pnt(self.centre)-s_dim/2)/self.parallax_depth)+s_dim/2)
+        call.set_arg('pos', ((self.camera.adjust_pnt(self.centre)-s_dim/2)/self.parallax_depth)+s_dim/2 - Pnt(self.width, self.height)/2)
         #call.set_arg('area', Rect(self.width/2, self.height/2, Pnt()))
         calls.append(call)
 

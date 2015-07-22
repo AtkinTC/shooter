@@ -72,9 +72,10 @@ class Enemy(Entity):
     def draw(self, debug=False):
         calls = []
 
-        call = Draw_call('image', 4)
+        call = Draw_call('texture', 4)
         call.set_arg('texture', self.texture)
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        pos = self.camera.adjust_pnt(self.pos) - Pnt(self.texture.width, self.texture.height)/2
+        call.set_arg('pos', pos)
         calls.append(call)
 
         if debug:
@@ -171,9 +172,10 @@ class Player(Entity):
         
         calls = []
 
-        call = Draw_call('image', 5)
+        call = Draw_call('texture', 5)
         call.set_arg('texture', self.texture)
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        pos = self.camera.adjust_pnt(self.pos) - Pnt(self.texture.width, self.texture.height)/2
+        call.set_arg('pos', pos)
         call.set_arg('angle', a)
         calls.append(call)
 
@@ -203,9 +205,10 @@ class Projectile(Entity):
     def draw(self, debug=False):
         calls = []
 
-        call = Draw_call('image', 6)
+        call = Draw_call('texture', 6)
         call.set_arg('texture', self.texture)
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        pos = self.camera.adjust_pnt(self.pos) - Pnt(self.texture.width, self.texture.height)/2
+        call.set_arg('pos', pos)
         if self.rotate:
             a = ((-self.dir+math.pi)*180.0)/math.pi
             call.set_arg('angle', a)
