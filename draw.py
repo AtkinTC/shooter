@@ -32,27 +32,24 @@ def get_dimensions():
     return Pnt(w,h)
 
 
-def draw_image(id, pos, area=None, angle=0,):
-    im = texture_control.get_texture(id)
-    
-    if im:
-        if angle:
-            d = (im.get_width()*2, im.get_height()*2)
-            im = pygame.transform.smoothscale(im, d)
-            im = pygame.transform.rotate(im, angle)
-            d = (im.get_width()/2, im.get_height()/2)
-            im = pygame.transform.smoothscale(im, d)
+def draw_image(texture, pos, area=None, angle=0,):
+    if angle:
+        d = (texture.get_width()*2, texture.get_height()*2)
+        texture = pygame.transform.smoothscale(texture, d)
+        texture = pygame.transform.rotate(texture, angle)
+        d = (texture.get_width()/2, texture.get_height()/2)
+        texture = pygame.transform.smoothscale(texture, d)
 
 
-        width, height = im.get_width(),im.get_height()
-        if area:
-            width, height = area.width, area.height
-        pos = pos-Pnt(width, height)/2
+    width, height = texture.get_width(),texture.get_height()
+    if area:
+        width, height = area.width, area.height
+    pos = pos-Pnt(width, height)/2
 
-        if area:
-            area = (area.pnt.x, area.pnt.y, area.width, area.height)
+    if area:
+        area = (area.pnt.x, area.pnt.y, area.width, area.height)
 
-        screen.blit(im, pos.tuple(), area)
+    screen.blit(texture, pos.tuple(), area)
 
 def fill(x, y, w, h, r, g, b):
     screen.fill((r,g,b),(x,y,w,h))

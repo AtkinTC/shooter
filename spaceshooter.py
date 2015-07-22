@@ -47,30 +47,30 @@ def init():
 
     entity_control.init()
 
-    texture_control.load_texture('graphics\\ship.tif', 'player_ship', True)
+    player_ship = texture_control.load_texture('graphics\\ship.tif', 'player_ship', True)
 
-    texture_control.load_texture('graphics\\bullet_6x6.tif', 'bullet1', True)
-    texture_control.load_texture('graphics\\target_30x30.tif', 'target1', True)
-    texture_control.load_texture('graphics\\layers\\dust_640x480_1.tif', 'dust1', True)
-    texture_control.load_texture('graphics\\layers\\dust_640x480_2.tif', 'dust2', True)
-    texture_control.load_texture('graphics\\layers\\dust_800x800_1.tif', 'dust3', True)
-    texture_control.load_texture('graphics\\layers\\planet_154x154_1.tif', 'planet1', True)
-    texture_control.load_texture('graphics\\layers\\planet_40x40_1.tif', 'planet2', True)
-    texture_control.load_texture('graphics\\layers\\starfield_640x480_1.tif', 'starfield', True)
+    bullet1 = texture_control.load_texture('graphics\\bullet_6x6.tif', 'bullet1', True)
+    target1 = texture_control.load_texture('graphics\\target_30x30.tif', 'target1', True)
+    dust1 = texture_control.load_texture('graphics\\layers\\dust_640x480_1.tif', 'dust1', True)
+    dust2 = texture_control.load_texture('graphics\\layers\\dust_640x480_2.tif', 'dust2', True)
+    dust3 = texture_control.load_texture('graphics\\layers\\dust_800x800_1.tif', 'dust3', True)
+    planet1 = texture_control.load_texture('graphics\\layers\\planet_154x154_1.tif', 'planet1', True)
+    planet2 = texture_control.load_texture('graphics\\layers\\planet_40x40_1.tif', 'planet2', True)
+    starfield = texture_control.load_texture('graphics\\layers\\starfield_640x480_1.tif', 'starfield', True)
 
     entities = {}
     shape = Polygon([Pnt(0,-15),Pnt(10,15), Pnt(-10,15)], Pnt())
-    player_id = entity_control.register(entity.Player('player_ship', shape, 0.0005, 0.2, 0.005, 'bullet1'))
+    player_id = entity_control.register(entity.Player(player_ship, shape, 0.0005, 0.2, 0.005, bullet1))
 
     shape = Circle(15)
-    entity_control.register(entity.Enemy('target1', shape, Pnt(300, 300), None))
+    entity_control.register(entity.Enemy(target1, shape, Pnt(300, 300), None))
     
-    entity_control.register(background.Background_scrolling(640, 480, 'dust1', 0.5, 4))
-    entity_control.register(background.Background_scrolling(640, 480, 'dust2', 1.0, 3))
-    entity_control.register(background.Background_scrolling(800, 800, 'dust3', 2.0, 3))
-    entity_control.register(background.Background_object(300, 100, 154, 154, 'planet1', 4, 2))
-    entity_control.register(background.Background_object(550, -200, 40, 40, 'planet2', 6, 1))
-    entity_control.register(background.Background_scrolling(640, 480, 'starfield', 20, 0))
+    entity_control.register(background.Background_scrolling(dust1, 0.5, 4))
+    entity_control.register(background.Background_scrolling(dust2, 1.0, 3))
+    entity_control.register(background.Background_scrolling(dust3, 2.0, 3))
+    entity_control.register(background.Background_object(Pnt(300, 100), planet1, 4, 2))
+    entity_control.register(background.Background_object(Pnt(550, -200), planet2, 6, 1))
+    entity_control.register(background.Background_scrolling(starfield, 20, 0))
 
     for e in entity_control.yield_entities():
         e.set_camera(camera)

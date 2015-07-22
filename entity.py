@@ -7,8 +7,8 @@ import entity_control
 small = 0.0000001
 
 class Entity:
-    def __init__(self, image_id, shape, pos):
-        self.image_id = image_id
+    def __init__(self, texture, shape, pos):
+        self.texture = texture
         self.shape = shape
         self.pos = pos
         self.camera = None
@@ -55,8 +55,8 @@ class Entity:
         return calls
 
 class Enemy(Entity):
-    def __init__(self, image_id, shape, pos, logic):
-        Entity.__init__(self, image_id, shape, pos)
+    def __init__(self, texture, shape, pos, logic):
+        Entity.__init__(self, texture, shape, pos)
 
         self.type = 'enemy'
 
@@ -73,7 +73,7 @@ class Enemy(Entity):
         calls = []
 
         call = Draw_call('image', 4)
-        call.set_arg('id', self.image_id)
+        call.set_arg('texture', self.texture)
         call.set_arg('pos', self.camera.adjust_pnt(self.pos))
         calls.append(call)
 
@@ -85,8 +85,8 @@ class Enemy(Entity):
 
 
 class Player(Entity):
-    def __init__(self, image_id, shape, max_accel, max_speed, max_turn, bullet_image_id):
-        Entity.__init__(self, image_id, shape, Pnt())
+    def __init__(self, texture, shape, max_accel, max_speed, max_turn, bullet_texture):
+        Entity.__init__(self, texture, shape, Pnt())
         self.type = 'player'
         self.dir = math.pi
         self.max_accel = max_accel
@@ -97,7 +97,7 @@ class Player(Entity):
         self.rotation = 0
         self.cooldown = 300
         self.timer = 300
-        self.bullet_image_id = bullet_image_id
+        self.bullet_texture = bullet_texture
 
     def input_aim(self):
         target = input.mpos+self.camera.get_pos()-Pnt(self.camera.get_width(),self.camera.get_height())/2
@@ -121,7 +121,7 @@ class Player(Entity):
 
     def input_shoot(self):
         if self.timer >= self.cooldown and input.player_shoot:
-            bullet = Projectile(self.bullet_image_id, Point(), self.pos, self.dir, 0.4, 3000)
+            bullet = Projectile(self.bullet_texture, Point(), self.pos, self.dir, 0.4, 3000)
             bullet.set_camera(self.camera)
             entity_control.register(bullet)
             self.timer = 0
@@ -172,7 +172,7 @@ class Player(Entity):
         calls = []
 
         call = Draw_call('image', 5)
-        call.set_arg('id', self.image_id)
+        call.set_arg('texture', self.texture)
         call.set_arg('pos', self.camera.adjust_pnt(self.pos))
         call.set_arg('angle', a)
         calls.append(call)
@@ -183,8 +183,8 @@ class Player(Entity):
         return calls
 
 class Projectile(Entity):
-    def __init__(self, image_id, shape, pos, dir, speed, lifetime=None, rotate=False):
-        Entity.__init__(self, image_id, shape, pos)
+    def __init__(self, texture, shape, pos, dir, speed, lifetime=None, rotate=False):
+        Entity.__init__(self, texture, shape, pos)
         self.type = 'bullet'
         self.dir = dir
         self.velocity = Pnt(-sin(dir), cos(dir))*speed
@@ -204,7 +204,7 @@ class Projectile(Entity):
         calls = []
 
         call = Draw_call('image', 6)
-        call.set_arg('id', self.image_id)
+        call.set_arg('texture', self.texture)
         call.set_arg('pos', self.camera.adjust_pnt(self.pos))
         if self.rotate:
             a = ((-self.dir+math.pi)*180.0)/math.pi

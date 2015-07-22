@@ -4,11 +4,11 @@ import camera
 from shape import *
 
 class Background_scrolling:
-    def __init__(self, width, height, image_id, parallax_depth=1, depth=1):
+    def __init__(self, texture, parallax_depth=1, depth=1):
         self.type = 'background'
-        self.width = width
-        self.height = height
-        self.image_id = image_id
+        self.width = texture.get_width()
+        self.height = texture.get_height()
+        self.texture = texture
         self.parallax_depth = parallax_depth
         self.depth = depth
         self.centre = Pnt()
@@ -50,7 +50,7 @@ class Background_scrolling:
         origin = Pnt(self.width-off_centre.x, self.height-off_centre.y)
 
         call = Draw_call('image', self.depth)
-        call.set_arg('id', self.image_id)
+        call.set_arg('texture', self.texture)
         call.set_arg('pos', off_centre+Pnt(-width,-height)/2)
         call.set_arg('area', Rect(width, height, origin))
         calls.append(call)
@@ -60,7 +60,7 @@ class Background_scrolling:
         origin = Pnt(0,self.height-off_centre.y)
 
         call = Draw_call('image', self.depth)
-        call.set_arg('id', self.image_id)
+        call.set_arg('texture', self.texture)
         call.set_arg('pos', off_centre+Pnt(width, -height)/2)
         call.set_arg('area', Rect(width, height, origin))
         calls.append(call)
@@ -70,7 +70,7 @@ class Background_scrolling:
         origin = Pnt(self.width-off_centre.x,0)
 
         call = Draw_call('image', self.depth)
-        call.set_arg('id', self.image_id)
+        call.set_arg('texture', self.texture)
         call.set_arg('pos', off_centre+Pnt(-width, height)/2)
         call.set_arg('area', Rect(width, height, origin))
         calls.append(call)
@@ -80,7 +80,7 @@ class Background_scrolling:
         origin = Pnt(0,0)
 
         call = Draw_call('image', self.depth)
-        call.set_arg('id', self.image_id)
+        call.set_arg('texture', self.texture)
         call.set_arg('pos', off_centre+Pnt(width, height)/2)
         call.set_arg('area', Rect(width, height, origin))
         calls.append(call)
@@ -101,12 +101,12 @@ class Background_scrolling:
 
 
 class Background_object:
-    def __init__(self, x, y, width, height, image_id, parallax_depth=1, depth=1):
+    def __init__(self, centre, texture, parallax_depth=1, depth=1):
         self.type = 'background'
-        self.centre = Pnt(x,y)
-        self.width = width
-        self.height = height
-        self.image_id = image_id
+        self.centre = centre
+        self.width = texture.get_width()
+        self.height = texture.get_height()
+        self.texture = texture
         self.parallax_depth = parallax_depth
         self.depth = depth
         self.id = None
@@ -127,7 +127,7 @@ class Background_object:
         calls = []
 
         call = Draw_call('image', self.depth)
-        call.set_arg('id', self.image_id)
+        call.set_arg('texture', self.texture)
         call.set_arg('pos', ((self.camera.adjust_pnt(self.centre)-s_dim/2)/self.parallax_depth)+s_dim/2)
         #call.set_arg('area', Rect(self.width/2, self.height/2, Pnt()))
         calls.append(call)
