@@ -35,6 +35,9 @@
     <Compile Include="input.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="logic.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="texture_control.py">
       <SubType>Code</SubType>
     </Compile>
