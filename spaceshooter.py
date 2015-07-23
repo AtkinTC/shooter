@@ -10,6 +10,7 @@ from draw_call import Draw_Call_List
 import entity
 import background
 import input
+import logic
 from shape import *
 from random import randint
 from pygame.time import Clock
@@ -57,11 +58,30 @@ def init():
     planet1 = load_texture('graphics\\layers\\planet_154x154_1.tif', 'planet1')
     planet2 = load_texture('graphics\\layers\\planet_40x40_1.tif', 'planet2')
     starfield = load_texture('graphics\\layers\\starfield_640x480_1.tif', 'starfield')
+    #test1 = load_texture('graphics\\layers\\test_640x480.tif', 'test1')
 
-    entities = {}
     shape = Polygon([Pnt(0,-15),Pnt(10,15), Pnt(-10,15)], Pnt())
-    player_id = entity_control.register(entity.Player(player_ship, shape, 0.0005, 0.2, 0.005, bullet1))
+    player = entity.Player(player_ship, shape, 0.0005, 0.2, 0.005, bullet1)
+    player_id = entity_control.register(player)
 
+    orb = entity.Entity(bullet1, Circle(3))
+    orb_logic = logic.Orbital_Logic(Pnt(0,40), 0.004, 0.2)
+    orb.socket_logic(orb_logic)
+    player.add_child(orb)
+    entity_control.register(orb)
+
+    orb = entity.Entity(bullet1, Circle(3))
+    orb_logic = logic.Orbital_Relative_Logic(Pnt(0,30), 0.175)
+    orb.socket_logic(orb_logic)
+    player.add_child(orb)
+    entity_control.register(orb)
+
+    orb = entity.Entity(bullet1, Circle(3))
+    orb_logic = logic.Orbital_Static_Logic(Pnt(0,20), 0.15)
+    orb.socket_logic(orb_logic)
+    player.add_child(orb)
+    entity_control.register(orb)
+    
     shape = Circle(15)
     entity_control.register(entity.Enemy(target1, shape, Pnt(300, 300), None))
     
@@ -138,13 +158,13 @@ while not done:
 
     e_list = [e for e in entity_control.yield_entities()]
 
-    type_map = {'background':0, 'player': 1, 'enemy':2, 'bullet':4}
+    type_map = {'player': 1, 'enemy':2, 'bullet':4,}
 
     for i in range(len(e_list)-1):
         for j in range(i+1, len(e_list)):
             e1 = e_list[i]
             e2 = e_list[j]
-            tc = type_map[e1.type]+type_map[e2.type]
+            tc = type_map.get(e1.type,0)+type_map.get(e2.type,0)
             collision_pnt = None
             if tc == 6:
                 collision_pnt = collision.shape_collide(e1.get_shape_proper(), e2.get_shape_proper())

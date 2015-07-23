@@ -3,11 +3,12 @@ from math import *
 from draw_call import Draw_call
 import input
 import entity_control
+import logic
 
 small = 0.0000001
 
 class Entity:
-    def __init__(self, texture, shape, pos):
+    def __init__(self, texture, shape, pos = Pnt(), draw_depth=5):
         self.texture = texture
         self.shape = shape
         self.pos = pos
@@ -15,6 +16,12 @@ class Entity:
         self.type = None
         self.children = []
         self.parent = None
+        self.logic = None
+        self.draw_depth = draw_depth
+
+    def socket_logic(self, logic):
+        self.logic = logic
+        logic.vehicle = self
 
     def add_child(self, child):
         self.children.append(child)
@@ -27,10 +34,21 @@ class Entity:
         self.camera = camera
 
     def update(self, delta):
-        return None
+        if self.logic:
+            self.logic.update(delta)
 
-    def draw(self):
-        return None
+    def draw(self, debug):
+        calls = []
+
+        call = Draw_call('texture', self.draw_depth)
+        call.set_arg('texture', self.texture)
+        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        calls.append(call)
+
+        if debug:
+            calls += self.debug_draw()
+
+        return calls
 
     def collide(self, target_id, contact_pnt):
         pass
@@ -62,7 +80,7 @@ class Entity:
 
 class Enemy(Entity):
     def __init__(self, texture, shape, pos, logic):
-        Entity.__init__(self, texture, shape, pos)
+        Entity.__init__(self, texture, shape, pos, 5)
 
         self.type = 'enemy'
 
@@ -70,24 +88,6 @@ class Enemy(Entity):
             logic.parent = self
         else:
             self.logic = None
-
-    def update(self, delta):
-        if self.logic:
-            self.logic.update()
-
-    def draw(self, debug=False):
-        calls = []
-
-        call = Draw_call('texture', 5)
-        call.set_arg('texture', self.texture)
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
-        calls.append(call)
-
-        if debug:
-            calls += self.debug_draw()
-
-
-        return calls
 
 
 class Player(Entity):
@@ -188,9 +188,96 @@ class Player(Entity):
 
         return calls
 
+class Orbital(Entity):
+    def __init__(self, texture, shape, rel_pos, rot_speed):
+        Entity.__init__(self, texture, shape, rel_pos)
+        self.type = 'player'
+        self.base_pos = rel_pos
+        self.rot_speed = rot_speed
+        self.dir = 0
+
+    def update(self, delta):
+        #self.parent = Player(self.parent)
+
+        self.dir = self.dir + self.rot_speed*delta
+
+        if self.parent:
+            x = (self.base_pos.x)*cos(self.dir) - (self.base_pos.y)*sin(self.dir)
+            y = (self.base_pos.x)*sin(self.dir) + (self.base_pos.y)*cos(self.dir)
+            self.pos = self.parent.pos + Pnt(x,y)
+
+
+    def draw(self, debug=False):
+        calls = []
+
+        if debug:
+            calls += self.debug_draw()
+
+        call = Draw_call('texture', 6)
+        call.set_arg('texture', self.texture)
+        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        #call.set_arg('angle', a)
+        calls.append(call)
+
+        return calls
+
+class Orbital_Static(Entity):
+    def __init__(self, texture, shape, rel_pos):
+        Entity.__init__(self, texture, shape, rel_pos)
+        self.type = 'player'
+        self.base_pos = rel_pos
+
+    def update(self, delta):
+        #self.parent = Player(self.parent)
+        if self.parent:
+            self.pos = self.parent.pos + self.base_pos
+
+
+    def draw(self, debug=False):
+        calls = []
+
+        if debug:
+            calls += self.debug_draw()
+
+        call = Draw_call('texture', 6)
+        call.set_arg('texture', self.texture)
+        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        #call.set_arg('angle', a)
+        calls.append(call)
+
+        return calls
+
+class Orbital_Relative(Entity):
+    def __init__(self, texture, shape, rel_pos):
+        Entity.__init__(self, texture, shape, rel_pos)
+        self.type = 'player'
+        self.base_pos = rel_pos
+
+    def update(self, delta):
+        #self.parent = Player(self.parent)
+        if self.parent:
+            x = (self.base_pos.x)*cos(self.parent.dir) - (self.base_pos.y)*sin(self.parent.dir)
+            y = (self.base_pos.x)*sin(self.parent.dir) + (self.base_pos.y)*cos(self.parent.dir)
+            self.pos = self.parent.pos + Pnt(x,y)
+
+
+    def draw(self, debug=False):
+        calls = []
+
+        if debug:
+            calls += self.debug_draw()
+
+        call = Draw_call('texture', 6)
+        call.set_arg('texture', self.texture)
+        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        #call.set_arg('angle', a)
+        calls.append(call)
+
+        return calls
+
 class Projectile(Entity):
     def __init__(self, texture, shape, pos, dir, speed, launch_velocity=Pnt(), lifetime=None, rotate=False):
-        Entity.__init__(self, texture, shape, pos)
+        Entity.__init__(self, texture, shape, pos, 7)
         self.type = 'bullet'
         self.dir = dir
         self.velocity = (Pnt(-sin(dir), cos(dir))*speed) + launch_velocity
@@ -206,21 +293,6 @@ class Projectile(Entity):
 
         self.pos = self.pos + self.velocity*delta
 
-    def draw(self, debug=False):
-        calls = []
-
-        call = Draw_call('texture', 7)
-        call.set_arg('texture', self.texture)
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
-        if self.rotate:
-            a = ((-self.dir+math.pi)*180.0)/math.pi
-            call.set_arg('angle', a)
-        calls.append(call)
-
-        if debug:
-            calls += self.debug_draw()
-
-        return calls
 
     def collide(self, target_id, contact_pnt):
         if entity_control.get_entity(target_id).type == 'enemy':
