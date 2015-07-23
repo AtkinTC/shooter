@@ -25,9 +25,6 @@
     <Compile Include="camera.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="draw_call_list.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="collision.py" />
     <Compile Include="draw.py" />
     <Compile Include="draw_call.py" />
