@@ -21,7 +21,7 @@ class Background_scrolling:
         self.id = id
 
     def update(self, delta):
-        off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
+        off_centre = self.camera.adjust_pnt(self.centre,self.parallax_depth)
         s_dim = draw.get_dimensions()
         if off_centre.x + self.width < s_dim.x:
             self.centre.x += self.width*self.parallax_depth
@@ -36,7 +36,7 @@ class Background_scrolling:
             self.centre.y -= self.height*self.parallax_depth
 
     def draw(self, debug):
-        off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
+        off_centre = self.camera.adjust_pnt(self.centre, self.parallax_depth)
 
         s_dim = draw.get_dimensions()
 
@@ -122,14 +122,27 @@ class Background_object:
 
     def draw(self, debug):
 
-        s_dim = Pnt(self.camera.get_width(), self.camera.get_height())
-
         calls = []
+
+        if debug:
+            calls = calls + self.debug_draw()
 
         call = Draw_call('texture', self.depth)
         call.set_arg('texture', self.texture)
-        call.set_arg('pos', ((self.camera.adjust_pnt(self.centre)-s_dim/2)/self.parallax_depth)+s_dim/2)
+        call.set_arg('pos', (self.camera.adjust_pnt(self.centre, self.parallax_depth)))
         #call.set_arg('area', Rect(self.width/2, self.height/2, Pnt()))
+        calls.append(call)
+
+        return calls
+
+    def debug_draw(self):
+        off_centre = self.camera.adjust_pnt(self.centre, self.parallax_depth)
+
+        calls = []
+
+        call = Draw_call('rect', 10)
+        call.set_arg('rect', Rect(self.width, self.height, off_centre-Pnt(self.width,self.height)/2))
+        call.set_arg('rgb', (255,255,255))
         calls.append(call)
 
         return calls

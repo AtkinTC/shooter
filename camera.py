@@ -22,5 +22,7 @@ class Camera:
     def get_height(self):
         return self.base_height
 
-    def adjust_pnt(self, pnt):
-        return Pnt(self.base_width, self.base_height)/2 + pnt - self.pos
+    def adjust_pnt(self, pnt, parallax=None):
+        if not parallax:
+            parallax = 1
+        return Pnt(self.base_width, self.base_height)/2 + (pnt-self.pos)/parallax
