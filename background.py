@@ -87,8 +87,9 @@ class Background_scrolling:
 
         return calls
 
+
     def debug_draw(self):
-        off_centre = self.camera.adjust_pnt(self.centre)/self.parallax_depth
+        off_centre = self.camera.adjust_pnt(self.centre, self.parallax_depth)
 
         calls = []
 
