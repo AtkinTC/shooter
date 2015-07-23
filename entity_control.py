@@ -1,20 +1,18 @@
 from entity import *
 
-entity_dict = None
-large = None
+entity_dict = {}
 kill_set = set()
 
 def init():
-    global entity_dict, large
+    global entity_dict
     entity_dict = {}
-    large = -1
 
-def register(entity):
-    global entity_dict, large
-    id = 0
-    while id in entity_dict:
-        id += 1
-    large = max(large, id)
+def register(entity, id = None):
+    global entity_dict
+    if not id:
+        id = 0
+        while id in entity_dict:
+            id += 1
     entity_dict[id] = entity
     entity.set_id(id)
     return id
