@@ -13,6 +13,12 @@ class Entity:
         self.pos = pos
         self.camera = None
         self.type = None
+        self.children = []
+        self.parent = None
+
+    def add_child(self, child):
+        self.children.append(child)
+        child.parent = self
 
     def set_id(self, id):
         self.id = id
@@ -121,7 +127,7 @@ class Player(Entity):
 
     def input_shoot(self):
         if self.timer >= self.cooldown and input.player_shoot:
-            bullet = Projectile(self.bullet_texture, Point(), self.pos, self.dir, 0.4, 3000)
+            bullet = Projectile(self.bullet_texture, Point(), self.pos, self.dir, 0.4, self.velocity, 3000)
             bullet.set_camera(self.camera)
             entity_control.register(bullet)
             self.timer = 0
@@ -183,11 +189,11 @@ class Player(Entity):
         return calls
 
 class Projectile(Entity):
-    def __init__(self, texture, shape, pos, dir, speed, lifetime=None, rotate=False):
+    def __init__(self, texture, shape, pos, dir, speed, launch_velocity=Pnt(), lifetime=None, rotate=False):
         Entity.__init__(self, texture, shape, pos)
         self.type = 'bullet'
         self.dir = dir
-        self.velocity = Pnt(-sin(dir), cos(dir))*speed
+        self.velocity = (Pnt(-sin(dir), cos(dir))*speed) + launch_velocity
         self.lifetime = lifetime
         self.age = 0
         self.rotate = rotate
