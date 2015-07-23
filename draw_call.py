@@ -23,6 +23,8 @@ class Draw_call:
 class Draw_Call_List:
     def __init__(self):
         self.dict = {}
+        self.small = 0
+        self.large = 0
 
     def append(self, calls):
         for call in calls:
@@ -30,8 +32,10 @@ class Draw_Call_List:
                 self.dict[call.depth].append(call)
             else:
                 self.dict[call.depth] = [call]
+            self.small = min(self.small, call.depth)
+            self.large = max(self.large, call.depth+1)
 
     def draw(self):
-        for k in self.dict.keys():
-            for call in self.dict[k]:
+        for k in range(self.small, self.large):
+            for call in self.dict.get(k, []):
                 call.run_draw_call()
