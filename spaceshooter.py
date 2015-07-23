@@ -77,7 +77,7 @@ def init():
     entity_control.register(orb)
 
     orb = entity.Entity(bullet1, Circle(3))
-    orb_logic = logic.Orbital_Static_Logic(Pnt(0,20), 0.15)
+    orb_logic = logic.Orbital_Static_Logic(Pnt(0,20), 0.175)
     orb.socket_logic(orb_logic)
     player.add_child(orb)
     entity_control.register(orb)
