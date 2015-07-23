@@ -10,6 +10,7 @@ class Logic:
     def update(self, delta):
         pass
 
+"""independantly rotating orbital around parent, movement only"""
 class Orbital_Logic(Logic):
     def __init__(self, relative_position, rotation_speed, move_speed=0):
         Logic.__init__(self)
@@ -42,6 +43,7 @@ class Orbital_Logic(Logic):
                 move = diff
             self.vehicle.pos += move
 
+"""orbital, static in relation to parent, including rotation, movement only"""
 class Orbital_Relative_Logic(Logic):
     def __init__(self, relative_position, move_speed=0):
         Logic.__init__(self)
@@ -66,6 +68,7 @@ class Orbital_Relative_Logic(Logic):
                 move = diff
             self.vehicle.pos += move
 
+"""orbital, static in relation to parent, no rotation, movement only"""
 class Orbital_Static_Logic(Logic):
     def __init__(self, relative_position, move_speed=0):
         Logic.__init__(self)
