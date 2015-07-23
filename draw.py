@@ -31,7 +31,6 @@ def get_dimensions():
 
 
 def draw_texture(texture, pos, area=None, angle=0,):
-    print pos
     if angle:
         d = (texture.get_width()*2, texture.get_height()*2)
         texture = pygame.transform.smoothscale(texture, d)
