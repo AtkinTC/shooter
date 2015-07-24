@@ -2,6 +2,7 @@ from math import *
 from shape import *
 import entity_control
 import entity
+from random import randint
 
 """a logic class, controlling a socketed entity"""
 class Logic:
@@ -54,28 +55,22 @@ class Enemy_Basic_Orbit_Logic(Logic):
         self.target_id = target_id
         self.dir = None
         self.range = range
+        self.clockwise = randint(0,1)*2-1
 
     def update(self, delta):
         #self.vehicle = entity.Enemy(self.vehicle)
 
         target = entity_control.get_entity(self.target_id)
 
-        if self.vehicle.velocity.mag() > 0.001:
-            for i in range(delta):
-                self.vehicle.velocity = self.vehicle.velocity*0.999999
-        else:
-            self.vehicle.velocity = Pnt()
-
         if target:
-
             #self.range = self.vehicle.target_pos - self.vehicle.pos
 
             if self.dir == None:
                 diff = target.pos - self.vehicle.pos
-                self.dir = atan2(diff.y, diff.x)
+                self.dir = atan2(diff.y, diff.x) + randint(-10,10)*pi/20.0
                 
 
-            self.dir -= 0.0015*delta
+            self.dir -= 0.0015*delta*self.clockwise
 
             self.dir = (self.dir if self.dir < 2*pi else self.dir-2*pi)
             self.dir = (self.dir if self.dir > 2*pi else self.dir+2*pi)
