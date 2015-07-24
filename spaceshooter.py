@@ -64,6 +64,7 @@ def init():
     player = entity.Player(player_ship, shape, 0.0005, 0.2, 0.005, bullet1)
     player_id = entity_control.register(player, 'player')
 
+    """
     orb = entity.Entity(bullet1, Circle(3))
     orb_logic = logic.Orbital_Logic(Pnt(0,40), 0.004, 0)
     orb.socket_logic(orb_logic)
@@ -81,8 +82,19 @@ def init():
     orb.socket_logic(orb_logic)
     player.add_child(orb)
     entity_control.register(orb)
+    """
     
     enemy = entity.Enemy(target1, Circle(15), Pnt(300, 300), 0.0003, 0.2)
+    enemy_logic = logic.Enemy_Basic_Logic('player')
+    enemy.socket_logic(enemy_logic)
+    entity_control.register(enemy)
+
+    enemy = entity.Enemy(target1, Circle(15), Pnt(-300, 300), 0.0003, 0.2)
+    enemy_logic = logic.Enemy_Basic_Logic('player')
+    enemy.socket_logic(enemy_logic)
+    entity_control.register(enemy)
+
+    enemy = entity.Enemy(target1, Circle(15), Pnt(0, -300), 0.0003, 0.19)
     enemy_logic = logic.Enemy_Basic_Logic('player')
     enemy.socket_logic(enemy_logic)
     entity_control.register(enemy)
