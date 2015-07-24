@@ -94,9 +94,9 @@ class Enemy(Entity):
     def update(self, delta):
         Entity.update(self, delta)
 
-        if self.velocity.mag() > 0.001:
+        if self.velocity.mag() > 0.00001:
             for i in range(delta):
-                self.velocity = self.velocity*0.999999
+                self.velocity = self.velocity*0.99999
         else:
             self.velocity = Pnt()
 
@@ -104,8 +104,8 @@ class Enemy(Entity):
 
         r = atan2(diff.y, diff.x)
         acc = Pnt(cos(r), sin(r))*self.max_accel
-        acc.x = (acc.x if abs(acc.x) > 0.0000001 else 0)
-        acc.y = (acc.y if abs(acc.y) > 0.0000001 else 0)
+        acc.x = (acc.x if abs(acc.x) > 0.00000001 else 0)
+        acc.y = (acc.y if abs(acc.y) > 0.00000001 else 0)
 
         self.velocity += acc*delta
 
