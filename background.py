@@ -93,9 +93,16 @@ class Background_scrolling:
 
         calls = []
 
-        call = Draw_call('shape', 10)
-        call.set_arg('shape', Circle(5, off_centre))
-        call.set_arg('rgb', (255,255,255))
+        call = Draw_call('line', 10)
+        call.set_arg('pos1', off_centre-Pnt(5,0))
+        call.set_arg('pos2', off_centre+Pnt(5,0))
+        call.set_arg('rgb', (150,50,250))
+        calls.append(call)
+
+        call = Draw_call('line', 10)
+        call.set_arg('pos1', off_centre-Pnt(0,5))
+        call.set_arg('pos2', off_centre+Pnt(0,5))
+        call.set_arg('rgb', (150,50,250))
         calls.append(call)
 
         return calls
