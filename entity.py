@@ -16,12 +16,12 @@ class Entity:
         self.type = None
         self.children = []
         self.parent = None
-        self.logic = None
+        self.logic = {}
         self.draw_depth = draw_depth
 
-    def socket_logic(self, logic):
-        self.logic = logic
+    def socket_logic(self, logic, id='main'):
         logic.vehicle = self
+        self.logic[id] = logic
 
     def add_child(self, child):
         self.children.append(child)
@@ -34,8 +34,10 @@ class Entity:
         self.camera = camera
 
     def update(self, delta):
-        if self.logic:
-            self.logic.update(delta)
+        if self.logic.has_key('main'):
+            self.logic['main'].update(delta)
+        for sub_logic in [self.logic[k] for k in self.logic if k != 'main']:
+            sub_logic.update(delta)
 
     def draw(self, debug):
         calls = []
@@ -64,30 +66,99 @@ class Entity:
     def debug_draw(self):
         calls = []
 
+        adjusted_pos = self.camera.adjust_pnt(self.pos)
+
         call = Draw_call('shape', 10)
         call.set_arg('shape', self.shape)
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        call.set_arg('pos', adjusted_pos)
         call.set_arg('rgb', (100, 100, 255))
         calls.append(call)
 
         call = Draw_call('rect', 10)
         call.set_arg('rect', self.shape.bounding_box())
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
+        call.set_arg('pos', adjusted_pos)
         call.set_arg('rgb', (250, 100, 100))
         calls.append(call)
 
         return calls
 
 class Enemy(Entity):
-    def __init__(self, texture, shape, pos, logic):
+    def __init__(self, texture, shape, pos, max_accel, max_speed):
         Entity.__init__(self, texture, shape, pos, 5)
-
         self.type = 'enemy'
+        self.max_accel = max_accel
+        self.max_speed = max_speed
+        self.velocity = Pnt()
+        self.target_pos = pos
 
-        if logic:
-            logic.parent = self
+    def update(self, delta):
+        Entity.update(self, delta)
+
+        if self.velocity.mag() > 0.001:
+            for i in range(delta):
+                self.velocity = self.velocity*0.999999
         else:
-            self.logic = None
+            self.velocity = Pnt()
+
+        diff = self.target_pos - self.pos
+
+        r = atan2(diff.y, diff.x)
+        acc = Pnt(cos(r), sin(r))*self.max_accel
+        acc.x = (acc.x if abs(acc.x) > 0.0000001 else 0)
+        acc.y = (acc.y if abs(acc.y) > 0.0000001 else 0)
+
+        self.velocity += acc*delta
+
+
+        if self.velocity.mag() > self.max_speed:
+            r = atan2(self.velocity.y, self.velocity.x)
+            self.velocity = Pnt(cos(r), sin(r))*self.max_speed
+
+        self.pos = self.pos + self.velocity*delta
+
+    def debug_draw(self):
+        calls = []
+
+        adjusted_pos = self.camera.adjust_pnt(self.pos)
+        adjusted_target_pos = self.camera.adjust_pnt(self.target_pos)
+
+        call = Draw_call('shape', 10)
+        call.set_arg('shape', self.shape)
+        call.set_arg('pos', adjusted_pos)
+        call.set_arg('rgb', (100, 100, 255))
+        calls.append(call)
+
+        call = Draw_call('rect', 10)
+        call.set_arg('rect', self.shape.bounding_box())
+        call.set_arg('pos', adjusted_pos)
+        call.set_arg('rgb', (250, 100, 100))
+        calls.append(call)
+
+        call = Draw_call('line', 10)
+        call.set_arg('pos1', adjusted_pos)
+        call.set_arg('pos2', adjusted_pos + self.velocity*100)
+        call.set_arg('rgb', (100, 250, 100))
+        calls.append(call)
+
+        call = Draw_call('line', 10)
+        call.set_arg('pos1', adjusted_pos)
+        call.set_arg('pos2', adjusted_target_pos)
+        call.set_arg('rgb', (200, 100, 10))
+        calls.append(call)
+
+        call = Draw_call('line', 10)
+        call.set_arg('pos1', adjusted_target_pos-Pnt(2,0))
+        call.set_arg('pos2', adjusted_target_pos+Pnt(2,0))
+        call.set_arg('rgb', (250, 100, 100))
+        calls.append(call)
+
+        call = Draw_call('line', 10)
+        call.set_arg('pos1', adjusted_target_pos-Pnt(0,2))
+        call.set_arg('pos2', adjusted_target_pos+Pnt(0,2))
+        call.set_arg('rgb', (250, 100, 100))
+        calls.append(call)
+
+        return calls
 
 
 class Player(Entity):
@@ -148,7 +219,7 @@ class Player(Entity):
         while self.dir < -math.pi:
             self.dir = self.dir + 2*math.pi
 
-        for i in range(min(delta,40)):
+        for i in range(delta):
             self.velocity = self.velocity*0.999
         
         if self.accel.mag() > small:
@@ -185,93 +256,6 @@ class Player(Entity):
 
         if debug:
             calls += self.debug_draw()
-
-        return calls
-
-class Orbital(Entity):
-    def __init__(self, texture, shape, rel_pos, rot_speed):
-        Entity.__init__(self, texture, shape, rel_pos)
-        self.type = 'player'
-        self.base_pos = rel_pos
-        self.rot_speed = rot_speed
-        self.dir = 0
-
-    def update(self, delta):
-        #self.parent = Player(self.parent)
-
-        self.dir = self.dir + self.rot_speed*delta
-
-        if self.parent:
-            x = (self.base_pos.x)*cos(self.dir) - (self.base_pos.y)*sin(self.dir)
-            y = (self.base_pos.x)*sin(self.dir) + (self.base_pos.y)*cos(self.dir)
-            self.pos = self.parent.pos + Pnt(x,y)
-
-
-    def draw(self, debug=False):
-        calls = []
-
-        if debug:
-            calls += self.debug_draw()
-
-        call = Draw_call('texture', 6)
-        call.set_arg('texture', self.texture)
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
-        #call.set_arg('angle', a)
-        calls.append(call)
-
-        return calls
-
-class Orbital_Static(Entity):
-    def __init__(self, texture, shape, rel_pos):
-        Entity.__init__(self, texture, shape, rel_pos)
-        self.type = 'player'
-        self.base_pos = rel_pos
-
-    def update(self, delta):
-        #self.parent = Player(self.parent)
-        if self.parent:
-            self.pos = self.parent.pos + self.base_pos
-
-
-    def draw(self, debug=False):
-        calls = []
-
-        if debug:
-            calls += self.debug_draw()
-
-        call = Draw_call('texture', 6)
-        call.set_arg('texture', self.texture)
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
-        #call.set_arg('angle', a)
-        calls.append(call)
-
-        return calls
-
-class Orbital_Relative(Entity):
-    def __init__(self, texture, shape, rel_pos):
-        Entity.__init__(self, texture, shape, rel_pos)
-        self.type = 'player'
-        self.base_pos = rel_pos
-
-    def update(self, delta):
-        #self.parent = Player(self.parent)
-        if self.parent:
-            x = (self.base_pos.x)*cos(self.parent.dir) - (self.base_pos.y)*sin(self.parent.dir)
-            y = (self.base_pos.x)*sin(self.parent.dir) + (self.base_pos.y)*cos(self.parent.dir)
-            self.pos = self.parent.pos + Pnt(x,y)
-
-
-    def draw(self, debug=False):
-        calls = []
-
-        if debug:
-            calls += self.debug_draw()
-
-        call = Draw_call('texture', 6)
-        call.set_arg('texture', self.texture)
-        call.set_arg('pos', self.camera.adjust_pnt(self.pos))
-        #call.set_arg('angle', a)
-        calls.append(call)
 
         return calls
 
