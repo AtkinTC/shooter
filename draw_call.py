@@ -19,6 +19,8 @@ class Draw_call:
             draw_rect(**self.args)
         elif type == 'text':
             draw_text(**self.args)
+        elif type == 'line':
+            draw_line(**self.args)
 
 class Draw_Call_List:
     def __init__(self):

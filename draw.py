@@ -91,8 +91,8 @@ def draw_shape_bound(shape, r, g, b):
 def draw_point(pos, r, g, b):
     pygame.draw.line(screen, (r,g,b), pos, pos, 1)
         
-def draw_line(pos1, pos2, r, g, b, width=1):
-    pygame.draw.line(screen, (r,g,b), pos1, pos2, width)
+def draw_line(pos1, pos2, rgb, width=1):
+    pygame.draw.line(screen, rgb, pos1.tuple(), pos2.tuple(), width)
 
 def draw_circle(pos, rad, r, g, b):
     pygame.draw.circle(screen, (r,g,b), pos, rad)
